@@ -1,4 +1,4 @@
-package test.java.com.uniquindio.bibliometria.algorithms.similarity;
+package com.uniquindio.bibliometria.algorithms.similarity;
 
 public class test {
     

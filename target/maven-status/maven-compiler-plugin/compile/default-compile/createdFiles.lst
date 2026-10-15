@@ -1,0 +1,15 @@
+main\java\com\uniquindio\bibliometria\exception\test.class
+main\java\com\uniquindio\bibliometria\algorithms\evaluation\test.class
+main\java\com\uniquindio\bibliometria\service\test.class
+main\java\com\uniquindio\bibliometria\preprocessing\test.class
+main\java\com\uniquindio\bibliometria\controller\test.class
+main\java\com\uniquindio\bibliometria\model\test.class
+main\java\com\uniquindio\bibliometria\ingestion\test.class
+main\java\com\uniquindio\bibliometria\dto\request\test.class
+main\java\com\uniquindio\bibliometria\config\test.class
+main\java\com\uniquindio\bibliometria\algorithms\clustering\linkage\test.class
+com\uniquindio\bibliometria\BibliometriaApplication.class
+main\java\com\uniquindio\bibliometria\algorithms\clustering\dendrogram\test.class
+main\java\com\uniquindio\bibliometria\dto\response\test.class
+main\java\com\uniquindio\bibliometria\algorithms\similarity\classic\test.class
+main\java\com\uniquindio\bibliometria\algorithms\similarity\ai\test.class
