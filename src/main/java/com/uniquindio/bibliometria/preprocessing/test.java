@@ -1,4 +1,4 @@
-package main.java.com.uniquindio.bibliometria.preprocessing;
+package com.uniquindio.bibliometria.preprocessing;
 
 public class test {
     

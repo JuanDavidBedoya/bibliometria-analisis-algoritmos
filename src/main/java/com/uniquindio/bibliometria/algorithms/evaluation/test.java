@@ -1,4 +1,4 @@
-package main.java.com.uniquindio.bibliometria.algorithms.evaluation;
+package com.uniquindio.bibliometria.algorithms.evaluation;
 
 public class test {
     

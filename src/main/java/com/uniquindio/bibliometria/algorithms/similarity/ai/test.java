@@ -1,4 +1,4 @@
-package main.java.com.uniquindio.bibliometria.algorithms.similarity.ai;
+package com.uniquindio.bibliometria.algorithms.similarity.ai;
 
 public class test {
     

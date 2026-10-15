@@ -1,4 +1,4 @@
-package main.java.com.uniquindio.bibliometria.algorithms.clustering.dendrogram;
+package com.uniquindio.bibliometria.algorithms.clustering.dendrogram;
 
 public class test {
     
