@@ -58,7 +58,7 @@ var result = new JaccardSimilarity().compare(
     processed.tokens(), otherProcessed.tokens(), JaccardSimilarity.EmptyUnionPolicy.REJECT);
 ```
 
-Cuando David agregue la construcción general, hay que incorporar PDFBox a su configuración y JUnit Jupiter a las dependencias de pruebas. No se han añadido controladores Spring, endpoints ni entidades: sus contratos deben coordinarse con David y Steban.
+El proyecto ya cuenta con la configuración Maven de David, que incluye PDFBox y las dependencias de pruebas de Spring Boot. Las 80 pruebas del módulo pasaron con esa configuración y los 20 PDFs. El script sigue disponible como ejecutor independiente y utiliza las versiones indicadas en sus requisitos. No se han añadido controladores Spring, endpoints ni entidades: sus contratos deben coordinarse con David y Steban.
 
 ## Reglas de extracción y límites
 
@@ -123,8 +123,8 @@ El ZIP proporcionado contiene 20 PDFs y 398 páginas. Se leyeron los documentos 
 
 ## Pruebas y trabajo pendiente
 
-Las pruebas cubren lectura multipágina, PDF inválido/cifrado/sin texto, campos ausentes, columnas, encabezados espaciados, abstract estructurado, conservación del original, limpieza opcional, Unicode, tokenización, entradas inválidas, unión vacía y propiedades de Jaccard. Incluyen pruebas de los 20 documentos y comparación real con una referencia independiente. El ejemplo matemático y el análisis de Jaccard están en [case_studies/jaccard.md](case_studies/jaccard.md).
+Las pruebas cubren lectura multipágina, PDF inválido/cifrado/sin texto, campos ausentes, columnas, encabezados espaciados, abstract estructurado, conservación del original, limpieza opcional, Unicode, tokenización, entradas inválidas, unión vacía y propiedades de Jaccard. Incluyen pruebas de los 20 documentos y comparación real con una referencia independiente. El ejemplo matemático y el análisis de Jaccard están en [casos_estudio/jaccard.md](casos_estudio/jaccard.md).
 
 Lisa confirmó que John y David usarán también los artículos 15 y 19 como caso común del Requerimiento 1. El cálculo de Jaccard usa la configuración predeterminada documentada y conserva los abstracts originales. Compartir la pareja no supone que ya se hayan ejecutado los algoritmos de los compañeros ni que se hayan acordado transformaciones idénticas para todos ellos.
 
-Pendiente de coordinación: conteo formal T(n) según la metodología y los costos definidos en clase e integración con construcción Spring Boot y modelo de datos del equipo. La validación manual de los 20 PDFs está completada. Las reglas actuales de preprocesamiento están definidas y desacopladas para los ajustes posteriores que acuerde el equipo. No se han implementado algoritmos de John, IA de David ni clustering/base de datos de Steban.
+Pendiente de coordinación: conteo formal T(n) según la metodología y los costos definidos en clase e integración con los servicios de Spring Boot y el modelo de datos del equipo. La compilación y las pruebas con Maven, así como la validación manual de los 20 PDFs, están completadas. Las reglas actuales de preprocesamiento están definidas y desacopladas para los ajustes posteriores que acuerde el equipo. No se han implementado algoritmos de John, IA de David ni clustering/base de datos de Steban.
