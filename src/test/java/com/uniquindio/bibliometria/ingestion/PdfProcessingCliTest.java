@@ -47,7 +47,7 @@ class PdfProcessingCliTest {
         var output = new PrintStream(new ByteArrayOutputStream());
         assertThrows(IllegalArgumentException.class, () -> PdfProcessingCli.run(new String[0], output));
         assertThrows(IllegalArgumentException.class, () -> PdfProcessingCli.run(
-                new String[]{"compare", "missing.zip", "1", "2", "--unknown"}, output));
+                new String[]{"inspect", "missing.zip", "1", "--unknown"}, output));
         assertThrows(IllegalArgumentException.class, () -> PdfProcessingCli.run(
                 new String[]{"inspect", "missing.zip", "0"}, output));
         assertThrows(IllegalArgumentException.class, () -> PdfProcessingCli.run(

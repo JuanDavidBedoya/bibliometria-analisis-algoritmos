@@ -1,6 +1,5 @@
 package com.uniquindio.bibliometria.ingestion;
 
-import com.uniquindio.bibliometria.algorithms.similarity.classic.JaccardSimilarity;
 import com.uniquindio.bibliometria.preprocessing.AbstractPreprocessor;
 import com.uniquindio.bibliometria.preprocessing.PreprocessingOptions;
 
@@ -29,20 +28,16 @@ public final class PdfProcessingCli {
     }
 
     public static void run(String[] args, PrintStream output) throws IOException {
-        if (args.length < 2 || !(args[0].equals("inspect") || args[0].equals("compare"))) {
-            throw new IllegalArgumentException("Usage: inspect <ZIP/directory> [article number] [options] | "
-                    + "compare <ZIP/directory> <left number> <right number> "
-                    + "[--preserve-text] [--whitespace] [--lowercase] [--unicode] [--join-hyphenation] [--reconstruct-spacing] [--empty=REJECT|ZERO|ONE]");
+        if (args.length < 2 || !args[0].equals("inspect")) {
+            throw new IllegalArgumentException("Usage: inspect <ZIP/directory> [article number] "
+                    + "[--preserve-text] [--whitespace] [--lowercase] [--unicode] [--join-hyphenation] [--reconstruct-spacing]");
         }
-        boolean compare = args[0].equals("compare");
-        if (compare && args.length < 4) throw new IllegalArgumentException("Select two articles");
         var defaults = PreprocessingOptions.minimalCleaning();
         boolean whitespace = defaults.normalizeWhitespace(), lowercase = defaults.lowercase();
         boolean unicode = defaults.normalizeUnicode(), hyphens = defaults.joinLineHyphenation();
         boolean spacing = defaults.reconstructWordSpacing();
-        var emptyPolicy = JaccardSimilarity.EmptyUnionPolicy.REJECT;
-        boolean inspectArticle = !compare && args.length > 2 && !args[2].startsWith("--");
-        for (int i = compare ? 4 : inspectArticle ? 3 : 2; i < args.length; i++) {
+        boolean inspectArticle = args.length > 2 && !args[2].startsWith("--");
+        for (int i = inspectArticle ? 3 : 2; i < args.length; i++) {
             switch (args[i]) {
                 case "--preserve-text" -> {
                     whitespace = false;
@@ -56,50 +51,23 @@ public final class PdfProcessingCli {
                 case "--unicode" -> unicode = true;
                 case "--join-hyphenation" -> hyphens = true;
                 case "--reconstruct-spacing" -> spacing = true;
-                default -> {
-                    if (!args[i].startsWith("--empty=")) {
-                        throw new IllegalArgumentException("Unknown option: " + args[i]);
-                    }
-                    emptyPolicy = JaccardSimilarity.EmptyUnionPolicy.valueOf(
-                            args[i].substring(8).toUpperCase(Locale.ROOT));
-                }
+                default -> throw new IllegalArgumentException("Unknown option: " + args[i]);
             }
         }
-        List<Integer> requested = compare
-                ? List.of(articleNumber(args[2]), articleNumber(args[3]))
-                : inspectArticle ? List.of(articleNumber(args[2])) : List.of();
+        List<Integer> requested = inspectArticle ? List.of(articleNumber(args[2])) : List.of();
         var loaded = loadSelected(Path.of(args[1]), requested, new DocumentPipeline(
                 new PdfBoxTextReader(), new ArticleExtractor(), new AbstractPreprocessor()));
         List<ExtractedArticle> articles = loaded.articles();
         var options = new PreprocessingOptions(whitespace, lowercase, unicode, hyphens, spacing);
-        if (!compare) {
-            output.println("PDFs in corpus: " + loaded.totalCount() + "; processed: "
-                    + loaded.processedCount() + "; extraction pending manual review");
-            if (inspectArticle) printArticle(articles.get(0), options, output);
-            else for (int i = 0; i < articles.size(); i++) {
-                var a = articles.get(i);
-                output.printf("%02d | %s | authors=%d | abstract=%d chars | %s%n", i + 1,
-                        a.title().isBlank() ? a.source() : a.title(), a.authors().size(),
-                        a.originalAbstract().length(), a.hasRequiredFields() ? "REVIEW" : "MISSING FIELDS");
-            }
-            return;
+        output.println("PDFs in corpus: " + loaded.totalCount() + "; processed: "
+                + loaded.processedCount() + "; extraction pending manual review");
+        if (inspectArticle) printArticle(articles.get(0), options, output);
+        else for (int i = 0; i < articles.size(); i++) {
+            var a = articles.get(i);
+            output.printf("%02d | %s | authors=%d | abstract=%d chars | %s%n", i + 1,
+                    a.title().isBlank() ? a.source() : a.title(), a.authors().size(),
+                    a.originalAbstract().length(), a.hasRequiredFields() ? "REVIEW" : "MISSING FIELDS");
         }
-        var preprocessor = new AbstractPreprocessor();
-        var left = preprocessor.process(articles.get(0), options);
-        var right = preprocessor.process(articles.get(1), options);
-        var result = new JaccardSimilarity().compare(left.tokens(), right.tokens(), emptyPolicy);
-        output.println("Jaccard comparison.");
-        output.println("A: " + left.article().source());
-        output.println("B: " + right.article().source());
-        output.println("Options: " + options + "; empty union policy=" + emptyPolicy);
-        output.println("Processed abstract A: " + left.processedAbstract());
-        output.println("Processed abstract B: " + right.processedAbstract());
-        output.println("A = " + result.leftSet());
-        output.println("B = " + result.rightSet());
-        output.println("Intersection = " + result.intersection());
-        output.println("Union = " + result.union());
-        output.printf(Locale.ROOT, "J(A,B) = %d / %d = %.12f%n",
-                result.intersection().size(), result.union().size(), result.similarity());
     }
 
     public static List<ExtractedArticle> loadCorpus(Path path) throws IOException {

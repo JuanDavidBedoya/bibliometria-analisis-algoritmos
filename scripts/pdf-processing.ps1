@@ -1,17 +1,14 @@
 param(
-    [ValidateSet('Test', 'Inspect', 'Compare')][string]$Mode = 'Test',
+    [ValidateSet('Test', 'Inspect')][string]$Mode = 'Test',
     [string]$Corpus,
     [int]$Article = 0,
-    [int]$Left = 0,
-    [int]$Right = 0,
     [switch]$PreserveText,
     [switch]$NormalizeWhitespace,
     [switch]$Lowercase,
     [switch]$NormalizeUnicode,
     [switch]$JoinLineHyphenation,
     [switch]$ReconstructWordSpacing,
-    [switch]$HideFontWarnings,
-    [ValidateSet('REJECT', 'ZERO', 'ONE')][string]$EmptyUnionPolicy = 'REJECT'
+    [switch]$HideFontWarnings
 )
 
 $ErrorActionPreference = 'Stop'
@@ -60,7 +57,7 @@ java.util.logging.ConsoleHandler.filter=com.uniquindio.bibliometria.ingestion.Pd
     & mvn -q -f $pomPath dependency:copy-dependencies "-DoutputDirectory=$buildDirectory\lib"
     if ($LASTEXITCODE -ne 0) { throw 'Dependency resolution failed' }
     $packageRoot = Join-Path $projectRoot 'src/main/java/com/uniquindio/bibliometria'
-    $sourceDirectories = @('ingestion', 'preprocessing', 'algorithms/similarity/classic')
+    $sourceDirectories = @('ingestion', 'preprocessing')
     $sources = @($sourceDirectories | ForEach-Object {
         Get-ChildItem -LiteralPath (Join-Path $packageRoot $_) -Filter *.java |
             Where-Object { $_.Name -ne 'test.java' } | ForEach-Object FullName
@@ -71,7 +68,7 @@ java.util.logging.ConsoleHandler.filter=com.uniquindio.bibliometria.ingestion.Pd
     $classpath = "$classDirectory;$buildDirectory\lib\*"
     if ($Mode -eq 'Test') {
         $testRoot = Join-Path $projectRoot 'src/test/java/com/uniquindio/bibliometria'
-        $tests = @(@('ingestion', 'preprocessing', 'algorithms/similarity/classic') | ForEach-Object {
+        $tests = @(@('ingestion', 'preprocessing') | ForEach-Object {
             Get-ChildItem -LiteralPath (Join-Path $testRoot $_) -Filter *Test.java | ForEach-Object FullName
         })
         & javac -encoding UTF-8 -cp $classpath -d $classDirectory @tests
@@ -81,11 +78,7 @@ java.util.logging.ConsoleHandler.filter=com.uniquindio.bibliometria.ingestion.Pd
     } else {
         $cliArguments = @($Mode.ToLowerInvariant(), $Corpus)
         if ($Mode -eq 'Inspect' -and $Article -gt 0) { $cliArguments += "$Article" }
-        if ($Mode -eq 'Compare') {
-            if ($Left -lt 1 -or $Right -lt 1) { throw 'Provide -Left and -Right article numbers' }
-            $cliArguments += @("$Left", "$Right", "--empty=$EmptyUnionPolicy")
-        }
-        if ($Mode -eq 'Compare' -or ($Mode -eq 'Inspect' -and $Article -gt 0)) {
+        if ($Mode -eq 'Inspect' -and $Article -gt 0) {
             if ($PreserveText) { $cliArguments += '--preserve-text' }
             if ($NormalizeWhitespace) { $cliArguments += '--whitespace' }
             if ($Lowercase) { $cliArguments += '--lowercase' }

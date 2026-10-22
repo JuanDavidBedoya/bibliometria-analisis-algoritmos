@@ -1,6 +1,5 @@
 package com.uniquindio.bibliometria.ingestion;
 
-import com.uniquindio.bibliometria.algorithms.similarity.classic.JaccardSimilarity;
 import com.uniquindio.bibliometria.preprocessing.AbstractPreprocessor;
 import com.uniquindio.bibliometria.preprocessing.PreprocessingOptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -180,32 +179,6 @@ class CorpusExtractionTest {
                 "The actual printed text must include an ASCII space after the period");
         assertTrue(printed.contains("Original abstract:\n" + articles.get(1).originalAbstract()
                 + System.lineSeparator()), "Console must print the unchanged original abstract");
-    }
-
-    @Test void realAbstractComparisonHasIndependentlyCheckedCardinalities() {
-        // Shared case confirmed by Lisa with the Requerimiento 1 team: articles 15 and 19.
-        var preprocessor = new AbstractPreprocessor();
-        var options = PreprocessingOptions.minimalCleaning();
-        var a = preprocessor.process(articles.get(14), options);
-        var b = preprocessor.process(articles.get(18), options);
-        var result = new JaccardSimilarity().compare(a.tokens(), b.tokens(), JaccardSimilarity.EmptyUnionPolicy.REJECT);
-        assertTrue(result.similarity() > 0 && result.similarity() < 1);
-        // Independent quadratic reference avoids reusing the production hashing algorithm.
-        var union = new java.util.ArrayList<String>();
-        var intersection = new java.util.ArrayList<String>();
-        for (String token : a.tokens()) if (!union.contains(token)) union.add(token);
-        for (String token : b.tokens()) {
-            if (a.tokens().contains(token) && !intersection.contains(token)) intersection.add(token);
-            if (!union.contains(token)) union.add(token);
-        }
-        assertEquals(union.size(), result.union().size());
-        assertEquals(intersection.size(), result.intersection().size());
-        assertEquals((double) intersection.size() / union.size(), result.similarity(), 1e-12);
-        assertEquals(133, result.leftSet().size());
-        assertEquals(141, result.rightSet().size());
-        assertEquals(31, result.intersection().size());
-        assertEquals(243, result.union().size());
-        assertNotEquals(a.article().originalAbstract(), a.processedAbstract());
     }
 
     private static String normalized(String text) {

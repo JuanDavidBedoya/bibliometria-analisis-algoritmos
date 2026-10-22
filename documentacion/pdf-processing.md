@@ -2,7 +2,7 @@
 
 ## Ejecución sencilla
 
-El módulo lee los PDFs desde un ZIP o una carpeta externa. No los copia al proyecto ni guarda archivos de resultados. El código y las pruebas están en los paquetes de ingestion, preprocessing y similarity/classic.
+El módulo lee los PDFs desde un ZIP o una carpeta externa. No los copia al proyecto ni guarda archivos de resultados. El código y las pruebas están en los paquetes de ingestion y preprocessing.
 
 Desde la raíz del repositorio:
 
@@ -16,19 +16,17 @@ Desde la raíz del repositorio:
 # Ejecutar pruebas unitarias y pruebas con los 20 documentos
 .\scripts\pdf-processing.ps1 -Mode Test -Corpus 'C:\Users\HP\Downloads\Articulos Proyecto Algoritmos.zip'
 
-# Caso común del equipo: artículos 15 y 19 con la limpieza acordada
-.\scripts\pdf-processing.ps1 -Mode Compare -Corpus 'C:\Users\HP\Downloads\Articulos Proyecto Algoritmos.zip' -Left 15 -Right 19
 ```
 
 Los números se refieren al orden del corpus: primero se ordena por el prefijo numérico del nombre y después por nombre. Sin prefijo, el orden es alfabético después de los archivos numerados.
 
-`Inspect -Article N` enumera los nombres para localizar el documento y procesa únicamente ese PDF; el encabezado distingue el total de documentos del corpus y los procesados. `Compare` procesa solo los dos seleccionados (una vez si son el mismo). `Inspect` sin número y las pruebas de integración procesan los 20. Las advertencias que aparezcan al seleccionar un artículo corresponden a esa lectura, no a otros documentos del ZIP.
+`Inspect -Article N` enumera los nombres para localizar el documento y procesa únicamente ese PDF; el encabezado distingue el total de documentos del corpus y los procesados. `Inspect` sin número y las pruebas de integración procesan los 20. Las advertencias que aparezcan al seleccionar un artículo corresponden a esa lectura, no a otros documentos del ZIP.
 
-Para probar sin modificar datos, ejecuta los comandos anteriores tal como están, sin redirigir su salida a archivos. Verifica primero un artículo contra su PDF, después el resumen completo, luego las pruebas y finalmente una comparación. `REVIEW` indica campos presentes y revisión manual pendiente; `MISSING FIELDS` requiere examinar las observaciones. El ejecutor solo escribe archivos de compilación en TEMP y dependencias en la caché de Maven; no modifica el ZIP, los PDFs ni crea salidas dentro del proyecto.
+Para probar sin modificar datos, ejecuta los comandos anteriores tal como están, sin redirigir su salida a archivos. Verifica primero un artículo contra su PDF, después el resumen completo y luego las pruebas. `REVIEW` indica campos presentes y revisión manual pendiente; `MISSING FIELDS` requiere examinar las observaciones. El ejecutor solo escribe archivos de compilación en TEMP y dependencias en la caché de Maven; no modifica el ZIP, los PDFs ni crea salidas dentro del proyecto.
 
 Requisitos del ejecutor: Java/JDK con soporte para records y switch moderno (probado con JDK 21), Maven en PATH y acceso al repositorio Maven para la primera descarga. El script resuelve PDFBox 3.0.8 y JUnit Platform Console 1.11.4 mediante un descriptor en TEMP y compila únicamente este módulo. Borra su directorio temporal al terminar. No inicializa ni sustituye el Maven/Gradle del equipo; Maven conserva las dependencias descargadas en su caché normal. Las pruebas sin `-Corpus` omiten el contenedor de integración, por lo que esa ejecución no prueba los 20 PDFs.
 
-PDFBox se usa para interpretar el formato PDF, no para implementar Jaccard. Referencias: [dependencia oficial](https://pdfbox.apache.org/3.0/getting-started.html) y [API de carga en PDFBox 3](https://pdfbox.apache.org/3.0/migration.html).
+PDFBox se usa para interpretar el formato PDF. Referencias: [dependencia oficial](https://pdfbox.apache.org/3.0/getting-started.html) y [API de carga en PDFBox 3](https://pdfbox.apache.org/3.0/migration.html).
 
 El ejecutor establece UTF-8 tanto para PowerShell como para la salida normal y de errores de Java. En JDK 21, `file.encoding` no basta para configurar `System.out` y `System.err`; se fijan también `stdout.encoding` y `stderr.encoding`, según la [documentación de Java](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html). Las advertencias de PDFBox sobre glifos sin correspondencia Unicode siguen visibles: no son un error de ejecución por sí mismas, pero deben considerarse al cotejar los campos extraídos.
 
@@ -43,7 +41,6 @@ Para una consola más limpia, añade `-HideFontWarnings` a cualquiera de los com
 1. `PdfTextReader.read(source, bytes)` devuelve `PdfTextDocument`: texto y geometría por página y título interno.
 2. `ArticleExtractor.extract(document)` devuelve `ExtractedArticle`: origen, título visible, autores, abstract original, observaciones y una copia con evidencia de separación de palabras. El original nunca se sustituye por esa copia.
 3. `DocumentPipeline.preprocess(article, options)` devuelve `ProcessedArticle`: extracción conservada, abstract procesado, tokens y opciones aplicadas.
-4. `JaccardSimilarity.compare(tokensA, tokensB, emptyUnionPolicy)` devuelve conjuntos A/B, intersección, unión y coeficiente.
 
 Son objetos inmutables sin anotaciones de entidad ni decisiones de persistencia. `DocumentPipeline` permite inyectar otro lector y consumir una extracción corregida manualmente. Una extracción incompleta se puede inspeccionar, pero el preprocesador rechaza usarla como si estuviera completa. Tener todos los campos no equivale a estar validado.
 
@@ -54,11 +51,9 @@ var pipeline = new DocumentPipeline(
     new PdfBoxTextReader(), new ArticleExtractor(), new AbstractPreprocessor());
 var article = pipeline.extract(fileName, pdfBytes);
 var processed = pipeline.preprocess(article);
-var result = new JaccardSimilarity().compare(
-    processed.tokens(), otherProcessed.tokens(), JaccardSimilarity.EmptyUnionPolicy.REJECT);
 ```
 
-El proyecto ya cuenta con la configuración Maven de David, que incluye PDFBox y las dependencias de pruebas de Spring Boot. Las 80 pruebas del módulo pasaron con esa configuración y los 20 PDFs. El script sigue disponible como ejecutor independiente y utiliza las versiones indicadas en sus requisitos. No se han añadido controladores Spring, endpoints ni entidades: sus contratos deben coordinarse con David y Steban.
+El proyecto ya cuenta con la configuración Maven de David, que incluye PDFBox y las dependencias de pruebas de Spring Boot. El script sigue disponible como ejecutor independiente y utiliza las versiones indicadas en sus requisitos. No se han añadido controladores Spring, endpoints ni entidades: sus contratos deben coordinarse con David y Steban.
 
 ## Reglas de extracción y límites
 
@@ -74,7 +69,7 @@ PDFs inválidos, cifrados con contraseña o sin permiso de extracción producen 
 
 ## Preprocesamiento y tokenización
 
-La configuración predeterminada acordada por Lisa reconstruye espacios usando la evidencia del PDF, une palabras partidas por guion y salto de línea, normaliza espacios y convierte a minúsculas con Locale.ROOT, conservando palabras, números y acrónimos. El abstract original permanece separado y sin modificaciones. `PreprocessingOptions.minimalCleaning()` expresa esta política y los métodos de preprocesamiento sin argumento de opciones la aplican. Se puede proporcionar otra configuración sin cambiar el lector, el tokenizador ni Jaccard. `preserveText()` conserva el texto extraído en la salida procesada; en consola se selecciona con `-PreserveText`.
+La configuración predeterminada acordada por Lisa reconstruye espacios usando la evidencia del PDF, une palabras partidas por guion y salto de línea, normaliza espacios y convierte a minúsculas con Locale.ROOT, conservando palabras, números y acrónimos. El abstract original permanece separado y sin modificaciones. `PreprocessingOptions.minimalCleaning()` expresa esta política y los métodos de preprocesamiento sin argumento de opciones la aplican. Se puede proporcionar otra configuración sin cambiar el lector ni el tokenizador. `preserveText()` conserva el texto extraído en la salida procesada; en consola se selecciona con `-PreserveText`.
 
 | Opción | Operación | Motivo y límite |
 |---|---|---|
@@ -92,7 +87,7 @@ Normalización Unicode permanece desactivada por defecto. No se eliminan stopwor
 
 La reconstrucción no puede separar con seguridad una cadena como `alsoprovides` si no hay evidencia de un límite de palabras en el PDF: no se inventan divisiones mediante un diccionario. La unión de guiones al final de línea es una heurística y requiere revisar los compuestos técnicos que también pueden contener guiones. El texto original permite cotejar y recuperar siempre lo extraído antes de estas operaciones. En el artículo 2 se comprueban `practitioners`, `relationships` y `also provides` en el procesado, manteniendo los cortes y espacios del original.
 
-El tokenizador recorre explícitamente los puntos de código Unicode. Conserva letras, números y marcas combinantes; mantiene guiones y apóstrofes internos entre caracteres de palabra. La puntuación restante delimita tokens. No hace expansión de abreviaturas: e.g. genera e y g, y 3.5 genera 3 y 5. La lista retiene repeticiones; Jaccard construye después el conjunto. La política de tokenización implementada queda documentada y puede ajustarse tras el acuerdo de preprocesamiento.
+El tokenizador recorre explícitamente los puntos de código Unicode. Conserva letras, números y marcas combinantes; mantiene guiones y apóstrofes internos entre caracteres de palabra. La puntuación restante delimita tokens. No hace expansión de abreviaturas: e.g. genera e y g, y 3.5 genera 3 y 5. La lista de tokens retiene repeticiones. La política de tokenización implementada queda documentada y puede ajustarse tras el acuerdo de preprocesamiento.
 
 ## Comprobación del corpus
 
@@ -123,8 +118,6 @@ El ZIP proporcionado contiene 20 PDFs y 398 páginas. Se leyeron los documentos 
 
 ## Pruebas y trabajo pendiente
 
-Las pruebas cubren lectura multipágina, PDF inválido/cifrado/sin texto, campos ausentes, columnas, encabezados espaciados, abstract estructurado, conservación del original, limpieza opcional, Unicode, tokenización, entradas inválidas, unión vacía y propiedades de Jaccard. Incluyen pruebas de los 20 documentos y comparación real con una referencia independiente. El ejemplo matemático y el análisis de Jaccard están en [casos_estudio/jaccard.md](casos_estudio/jaccard.md).
+Las pruebas cubren lectura multipágina, PDF inválido/cifrado/sin texto, campos ausentes, columnas, encabezados espaciados, abstract estructurado, conservación del original, limpieza opcional, Unicode, tokenización y entradas inválidas. Incluyen pruebas de los 20 documentos.
 
-Lisa confirmó que John y David usarán también los artículos 15 y 19 como caso común del Requerimiento 1. El cálculo de Jaccard usa la configuración predeterminada documentada y conserva los abstracts originales. Compartir la pareja no supone que ya se hayan ejecutado los algoritmos de los compañeros ni que se hayan acordado transformaciones idénticas para todos ellos.
-
-Pendiente de coordinación: conteo formal T(n) según la metodología y los costos definidos en clase e integración con los servicios de Spring Boot y el modelo de datos del equipo. La compilación y las pruebas con Maven, así como la validación manual de los 20 PDFs, están completadas. Las reglas actuales de preprocesamiento están definidas y desacopladas para los ajustes posteriores que acuerde el equipo. No se han implementado algoritmos de John, IA de David ni clustering/base de datos de Steban.
+Pendiente de coordinación: integración con los servicios de Spring Boot y el modelo de datos del equipo. La validación manual de los 20 PDFs está completada. Las reglas actuales de preprocesamiento están definidas y desacopladas para los ajustes posteriores que acuerde el equipo.
