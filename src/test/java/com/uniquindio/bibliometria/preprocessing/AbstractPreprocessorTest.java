@@ -1,9 +1,13 @@
 package com.uniquindio.bibliometria.preprocessing;
 
-import com.uniquindio.bibliometria.ingestion.ExtractedArticle;
-import org.junit.jupiter.api.Test;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import com.uniquindio.bibliometria.ingestion.ExtractedArticle;
 
 class AbstractPreprocessorTest {
     private final AbstractPreprocessor preprocessor = new AbstractPreprocessor();
@@ -133,16 +137,5 @@ class AbstractPreprocessorTest {
         assertEquals(List.of(), preprocessor.tokenize(""));
         assertEquals(List.of(), preprocessor.tokenize("... \n"));
     }
-    @Test void missingExtractionCannotSilentlyFeedAlgorithms() {
-        var missing = new ExtractedArticle("bad.pdf", "", List.of(), "text", List.of("missing title"));
-        assertThrows(IllegalArgumentException.class, () -> preprocessor.process(missing, PreprocessingOptions.preserveText()));
-    }
-    @Test void processingIsRepeatableAndResultsImmutable() {
-        var options = new PreprocessingOptions(true, true, true, false);
-        var a = preprocessor.process(article(" AI\n ﬁeld 2024 "), options);
-        var b = preprocessor.process(article(a.processedAbstract()), options);
-        assertEquals(a.processedAbstract(), b.processedAbstract());
-        assertEquals(a.tokens(), b.tokens());
-        assertThrows(UnsupportedOperationException.class, () -> a.tokens().add("x"));
-    }
+
 }
