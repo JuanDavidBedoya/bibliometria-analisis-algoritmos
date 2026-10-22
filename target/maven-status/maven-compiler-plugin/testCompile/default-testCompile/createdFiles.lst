@@ -1,5 +1,4 @@
-test\java\com\uniquindio\bibliometria\algorithms\clustering\test.class
-com\uniquindio\bibliometria\BibliometriaApplicationTests.class
-test\java\com\uniquindio\bibliometria\algorithms\similarity\test.class
-test\java\com\uniquindio\bibliometria\controller\test.class
-test\java\com\uniquindio\bibliometria\service\test.class
+com\uniquindio\bibliometria\algoritmos\similitud\test.class
+com\uniquindio\bibliometria\controller\test.class
+com\uniquindio\bibliometria\algoritmos\agrupamiento\test.class
+com\uniquindio\bibliometria\service\test.class
