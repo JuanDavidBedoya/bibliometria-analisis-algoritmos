@@ -1,18 +1,26 @@
 /**
  * pages/InformacionPage.jsx
- *
- * Ventana 1: Información general del estudio bibliométrico.
- * Muestra los títulos y metadatos de todos los artículos científicos utilizados.
+ * Ventana 1: Hero section + grilla de tarjetas de artículos.
+ * Paleta: verde claro.
  */
-
 import { useState, useEffect } from 'react'
-import { obtenerArticulos } from '../api/bucketSortApi'
+import { obtenerArticulos }    from '../api/bucketSortApi'
+import logoUQ from '../assets/Logo UQ.jpg'
+
+const COLORES_GRADIENTE = [
+  'linear-gradient(135deg, #bbf7d0 0%, #86efac 100%)',
+  'linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%)',
+  'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)',
+  'linear-gradient(135deg, #6ee7b7 0%, #34d399 100%)',
+  'linear-gradient(135deg, #34d399 0%, #10b981 100%)',
+  'linear-gradient(135deg, #ecfdf5 0%, #bbf7d0 100%)',
+]
 
 function InformacionPage() {
-  const [articulos, setArticulos] = useState([])
-  const [busqueda, setBusqueda] = useState('')
+  const [articulos, setArticulos]   = useState([])
+  const [busqueda, setBusqueda]     = useState('')
   const [expandidoId, setExpandidoId] = useState(null)
-  const [cargando, setCargando] = useState(true)
+  const [cargando, setCargando]     = useState(true)
 
   useEffect(() => {
     async function cargar() {
@@ -27,135 +35,188 @@ function InformacionPage() {
   const filtrados = articulos.filter(a => {
     const termino = busqueda.toLowerCase().trim()
     if (!termino) return true
-    const titulo = (a.titulo || '').toLowerCase()
+    const titulo  = (a.titulo  || '').toLowerCase()
     const archivo = (a.archivo || '').toLowerCase()
     const autores = (a.autores || []).join(' ').toLowerCase()
     return titulo.includes(termino) || autores.includes(termino) || archivo.includes(termino)
   })
 
-  const totalPalabrasCorpus = articulos.reduce((acc, a) => acc + (a.totalPalabras || 0), 0)
+  const totalPalabras = articulos.reduce((acc, a) => acc + (a.totalPalabras || 0), 0)
+
+  function scrollArticulos() {
+    document.getElementById('seccion-articulos')?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
-    <div className="pagina-contenedor">
-      {/* Encabezado de la ventana */}
-      <header className="pagina-header">
-        <div className="header-badge">VENTANA 1 · INFORMACIÓN</div>
-        <h1>Artículos Científicos del Estudio</h1>
-        <p className="pagina-descripcion">
-          Corpus documental de 20 artículos científicos en formato PDF centrados en el impacto
-          y aplicación de la <strong>Inteligencia Artificial en la Educación (AIEd)</strong>.
-          Estos documentos fueron preprocesados y analizados para la aplicación de los algoritmos de ordenamiento.
-        </p>
-      </header>
+    <div className="info-pagina">
 
-      {/* Banner de estadísticas rápidas */}
-      <div className="stats-banner">
-        <div className="stat-card">
-          <span className="stat-numero">{articulos.length}</span>
-          <span className="stat-etiqueta">Artículos Seleccionados</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-numero">100%</span>
-          <span className="stat-etiqueta">Preprocesados a JSON</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-numero">AIEd</span>
-          <span className="stat-etiqueta">Dominio Temático</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-numero">{totalPalabrasCorpus.toLocaleString()}</span>
-          <span className="stat-etiqueta">Palabras Totales en Abstracts</span>
-        </div>
-      </div>
+      {/* ── HERO ─────────────────────────────────────────── */}
+      <section className="hero-section">
+        <div className="hero-izquierda">
+          <div className="hero-badge">✨ Análisis de Algoritmos 2026-2</div>
 
-      {/* Barra de búsqueda y conteo */}
-      <div className="busqueda-barra">
-        <div className="busqueda-input-wrapper">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Buscar por título, autor o nombre de archivo..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
-          {busqueda && (
-            <button className="limpiar-busqueda" onClick={() => setBusqueda('')}>
-              ✕
+          <h1 className="hero-titulo">
+            Proyecto Final<br />
+            <span className="hero-titulo-acento">Análisis de Algoritmos</span>
+          </h1>
+
+          <div className="hero-equipo">
+            <div className="equipo-item">
+              <span className="equipo-dot"></span>Juan David Bedoya Sánchez
+            </div>
+            <div className="equipo-item">
+              <span className="equipo-dot"></span>John Angel Cardona Camacho
+            </div>
+            <div className="equipo-item">
+              <span className="equipo-dot"></span>Elizabeth Maya Orozco
+            </div>
+            <div className="equipo-item">
+              <span className="equipo-dot"></span>Juan Steban Martínez Bermúdez
+            </div>
+          </div>
+
+          <div className="hero-buttons">
+            <button className="btn-hero-primary" onClick={scrollArticulos}>
+              Ver Artículos →
             </button>
-          )}
-        </div>
-        <div className="conteo-articulos">
-          Mostrando <strong>{filtrados.length}</strong> de {articulos.length} artículos
-        </div>
-      </div>
+            <button className="btn-hero-outline">
+              Explorar Algoritmos
+            </button>
+          </div>
 
-      {/* Listado de artículos */}
-      {cargando ? (
-        <div className="cargando-estado">
-          <div className="spinner"></div>
-          <p>Cargando artículos del corpus documental...</p>
+          <div className="hero-stats">
+            <div className="hero-stat">
+              <span className="hero-stat-num">{articulos.length || 20}</span>
+              <span className="hero-stat-lbl">Artículos</span>
+            </div>
+            <div className="hero-stat-sep"></div>
+            <div className="hero-stat">
+              <span className="hero-stat-num">{totalPalabras > 0 ? totalPalabras.toLocaleString() : '1012+'}</span>
+              <span className="hero-stat-lbl">Términos únicos</span>
+            </div>
+            <div className="hero-stat-sep"></div>
+            <div className="hero-stat">
+              <span className="hero-stat-num">AIEd</span>
+              <span className="hero-stat-lbl">Dominio temático</span>
+            </div>
+          </div>
         </div>
-      ) : filtrados.length === 0 ? (
-        <div className="sin-resultados">
-          <p>No se encontraron artículos con el término <strong>"{busqueda}"</strong>.</p>
-          <button className="btn-secundario" onClick={() => setBusqueda('')}>Limpiar filtro</button>
+
+        <div className="hero-derecha">
+          <div className="hero-img-wrapper">
+            <img src={logoUQ} alt="Universidad del Quindío" className="hero-img" />
+            <div className="hero-floating-card">
+              <span className="floating-card-icon">🎓</span>
+              <div className="floating-card-texto">
+                <strong>Universidad del Quindío</strong>
+                <span>Ingeniería de Sistemas · 2026</span>
+              </div>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="lista-articulos">
-          {filtrados.map((art) => {
-            const estaExpandido = expandidoId === art.id
-            return (
-              <article key={art.id} className={`articulo-tarjeta ${estaExpandido ? 'expandido' : ''}`}>
-                <div className="articulo-header">
-                  <div className="articulo-id-badge">#{art.id}</div>
-                  <div className="articulo-meta-top">
-                    <span className="articulo-archivo" title={art.archivo}>
-                      📄 {art.archivo}
-                    </span>
-                    {art.totalPalabras > 0 && (
-                      <span className="articulo-tokens-badge">
-                        {art.totalPalabras} palabras
-                      </span>
+      </section>
+
+      {/* ── SECCIÓN ARTÍCULOS ─────────────────────────────── */}
+      <section id="seccion-articulos" className="articulos-section">
+        <div className="articulos-section-header">
+          <h2>Artículos del Corpus Bibliométrico</h2>
+          <p>Investigaciones sobre Inteligencia Artificial en Educación (AIEd)</p>
+        </div>
+
+        {/* Búsqueda */}
+        <div className="busqueda-barra">
+          <div className="busqueda-input-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Buscar por título, autor o archivo..."
+              value={busqueda}
+              onChange={e => setBusqueda(e.target.value)}
+            />
+            {busqueda && (
+              <button className="limpiar-busqueda" onClick={() => setBusqueda('')}>✕</button>
+            )}
+          </div>
+          <div className="conteo-articulos">
+            Mostrando <strong>{filtrados.length}</strong> de {articulos.length} artículos
+          </div>
+        </div>
+
+        {/* Grid de tarjetas */}
+        {cargando ? (
+          <div className="cargando-estado">
+            <div className="spinner"></div>
+            <p>Cargando artículos del corpus documental...</p>
+          </div>
+        ) : filtrados.length === 0 ? (
+          <div className="sin-resultados">
+            <p>No se encontraron artículos con <strong>"{busqueda}"</strong>.</p>
+            <button className="btn-secundario" onClick={() => setBusqueda('')}>Limpiar filtro</button>
+          </div>
+        ) : (
+          <div className="cards-grid">
+            {filtrados.map((art, idx) => {
+              const expandido  = expandidoId === art.id
+              const gradiente  = COLORES_GRADIENTE[idx % COLORES_GRADIENTE.length]
+              const primerAutor = (art.autores || [])[0] || ''
+              const masAutores  = (art.autores || []).length > 1 ? ` et al.` : ''
+              const extracto    = (art.resumenOriginal || '').slice(0, 110) + ((art.resumenOriginal || '').length > 110 ? '…' : '')
+
+              return (
+                <article key={art.id} className={`art-card ${expandido ? 'expandida' : ''}`}>
+                  {/* Imagen superior con gradiente */}
+                  <div className="art-card-imagen" style={{ background: gradiente }}>
+                    <span className="art-card-num">#{art.id}</span>
+                    <div className="art-card-icon-badge">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Cuerpo */}
+                  <div className="art-card-body">
+                    <span className="art-card-archivo">📄 {art.archivo}</span>
+                    <h3 className="art-card-titulo">{art.titulo}</h3>
+                    {primerAutor && (
+                      <p className="art-card-autores">👥 {primerAutor}{masAutores}</p>
                     )}
-                  </div>
-                </div>
+                    {extracto && (
+                      <p className="art-card-extracto">{extracto}</p>
+                    )}
 
-                <h2 className="articulo-titulo">{art.titulo}</h2>
+                    {art.totalPalabras > 0 && (
+                      <span className="art-card-palabras">{art.totalPalabras} palabras</span>
+                    )}
 
-                {/* Autores */}
-                <div className="articulo-autores">
-                  <span className="autores-icono">👥 Autores:</span>
-                  <div className="autores-tags">
-                    {(art.autores || []).map((autor, idx) => (
-                      <span key={idx} className="autor-tag">{autor}</span>
-                    ))}
-                  </div>
-                </div>
+                    {art.resumenOriginal && (
+                      <button
+                        className="btn-toggle-abstract"
+                        onClick={() => setExpandidoId(expandido ? null : art.id)}
+                      >
+                        {expandido ? '▲ Ocultar resumen' : '▼ Ver resumen completo'}
+                      </button>
+                    )}
 
-                {/* Resumen desplegable */}
-                {art.resumenOriginal && (
-                  <div className="articulo-abstract-seccion">
-                    <button
-                      className="btn-toggle-abstract"
-                      onClick={() => setExpandidoId(estaExpandido ? null : art.id)}
-                    >
-                      {estaExpandido ? '▲ Ocultar Resumen Original (Abstract)' : '▼ Ver Resumen Original (Abstract)'}
-                    </button>
-                    {estaExpandido && (
+                    {expandido && (
                       <div className="abstract-contenido">
                         <p>{art.resumenOriginal}</p>
                       </div>
                     )}
                   </div>
-                )}
-              </article>
-            )
-          })}
-        </div>
-      )}
+                </article>
+              )
+            })}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

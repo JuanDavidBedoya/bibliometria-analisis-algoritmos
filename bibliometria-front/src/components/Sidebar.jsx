@@ -1,14 +1,10 @@
 /**
  * components/Sidebar.jsx
- *
- * Menú lateral izquierdo con la paleta de colores morados.
- * Permite alternar entre las tres ventanas de la aplicación:
- *   1. "informacion"  - Información y títulos de los artículos del estudio
- *   2. "countingsort" - Ejecución y análisis del algoritmo Counting Sort
- *   3. "bucketsort"   - Ejecución y análisis del algoritmo Bucket Sort
+ * Menú lateral colapsable con paleta de colores verde.
  */
+import { useEffect } from 'react'
 
-function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20 }) {
+function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20, isOpen, setIsOpen }) {
   const items = [
     {
       id: 'informacion',
@@ -22,11 +18,11 @@ function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20 }) {
           <line x1="9" y1="11" x2="15" y2="11" />
         </svg>
       ),
-      badge: `${totalArticulos} arts.`
+      badge: `${totalArticulos}`
     },
     {
       id: 'countingsort',
-      titulo: 'Algoritmo Counting Sort',
+      titulo: 'Counting Sort',
       subtitulo: 'Conteo y prefijos O(n+k)',
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -39,39 +35,61 @@ function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20 }) {
     },
     {
       id: 'bucketsort',
-      titulo: 'Algoritmo Bucket Sort',
+      titulo: 'Bucket Sort',
       subtitulo: 'Ranking y métricas O(n)',
       icono: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2v20" />
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 6h18" />
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          <line x1="10" y1="11" x2="10" y2="17" />
+          <line x1="14" y1="11" x2="14" y2="17" />
         </svg>
       ),
       badge: 'O(n)'
     }
   ]
 
+  // Persist sidebar state
+  useEffect(() => {
+    localStorage.setItem('sidebarAbierto', String(isOpen))
+  }, [isOpen])
+
   return (
-    <aside className="sidebar">
-      {/* Encabezado del menú */}
-      <div className="sidebar-brand">
-        <div className="brand-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2" />
-            <polyline points="2 17 12 22 22 17" />
-            <polyline points="2 12 12 17 22 12" />
-          </svg>
-        </div>
-        <div className="brand-info">
-          <h2>Bibliometría</h2>
-          <span>Análisis de Algoritmos</span>
-        </div>
-      </div>
+    <aside className={`sidebar ${isOpen ? 'sidebar-expandido' : 'sidebar-colapsado'}`}>
+      {/* Botón hamburguesa toggle */}
+      <button
+        className="sidebar-toggle-btn"
+        onClick={() => setIsOpen(!isOpen)}
+        title={isOpen ? 'Colapsar menú' : 'Expandir menú'}
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="3" y1="6"  x2="21" y2="6"  />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
 
-      <div className="sidebar-section-title">MENÚ PRINCIPAL</div>
+      {/* Brand */}
+      {isOpen && (
+        <div className="sidebar-brand">
+          <div className="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2" />
+              <polyline points="2 17 12 22 22 17" />
+              <polyline points="2 12 12 17 22 12" />
+            </svg>
+          </div>
+          <div className="brand-info">
+            <h2>Bibliometría</h2>
+            <span>Análisis de Algoritmos</span>
+          </div>
+        </div>
+      )}
 
-      {/* Lista de navegación */}
+      {isOpen && <div className="sidebar-section-title">MENÚ PRINCIPAL</div>}
+
+      {/* Navegación */}
       <nav className="sidebar-nav">
         {items.map(item => {
           const activo = ventanaActiva === item.id
@@ -80,28 +98,35 @@ function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20 }) {
               key={item.id}
               className={`nav-btn ${activo ? 'activo' : ''}`}
               onClick={() => setVentanaActiva(item.id)}
+              title={!isOpen ? item.titulo : undefined}
             >
               <div className="nav-btn-icon">{item.icono}</div>
-              <div className="nav-btn-text">
-                <span className="nav-btn-title">{item.titulo}</span>
-                <span className="nav-btn-sub">{item.subtitulo}</span>
-              </div>
-              {item.badge && <span className="nav-btn-badge">{item.badge}</span>}
+              {isOpen && (
+                <div className="nav-btn-text">
+                  <span className="nav-btn-title">{item.titulo}</span>
+                  <span className="nav-btn-sub">{item.subtitulo}</span>
+                </div>
+              )}
+              {isOpen && item.badge && (
+                <span className="nav-btn-badge">{item.badge}</span>
+              )}
             </button>
           )
         })}
       </nav>
 
-      {/* Pie del menú */}
-      <div className="sidebar-footer">
-        <div className="footer-card">
-          <div className="footer-indicator"></div>
-          <div>
-            <strong>Universidad del Quindío</strong>
-            <p>Ingeniería de Sistemas · 2026</p>
+      {/* Footer */}
+      {isOpen && (
+        <div className="sidebar-footer">
+          <div className="footer-card">
+            <div className="footer-indicator"></div>
+            <div>
+              <strong>Universidad del Quindío</strong>
+              <p>Ingeniería de Sistemas · 2026</p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </aside>
   )
 }
