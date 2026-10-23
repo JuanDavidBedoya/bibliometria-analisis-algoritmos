@@ -56,6 +56,7 @@ function CountingSortPage() {
         setFiltrarStopwords={setFiltrarStopwords}
         cargando={cargando}
         onEjecutar={ejecutarCountingSort}
+        nombreAlgoritmo="Counting Sort"
       />
 
       {/* Error si el backend no está disponible */}
@@ -68,10 +69,12 @@ function CountingSortPage() {
           <TarjetasMetricas
             tiempoMs={resultado.tiempoMs || 0}
             totalElementos={resultado.totalElementos || 0}
-            numeroCubetas={resultado.rangoK || 0}
+            rangoK={resultado.rangoK || resultado.numeroCubetas || 0}
+            numeroCubetas={resultado.rangoK || resultado.numeroCubetas || 0}
             frecuenciaMinima={resultado.frecuenciaMinima ?? 1}
             frecuenciaMaxima={resultado.frecuenciaMaxima ?? 1}
             totalArticulos={resultado.totalArticulos || 20}
+            algoritmo="Counting Sort"
           />
 
           {/* Tabla de Ranking */}
@@ -83,7 +86,7 @@ function CountingSortPage() {
               </span>
             </div>
             <div className="chip-resumen-algoritmo">
-              <span>Algoritmo:</span> <strong>{resultado.algoritmo}</strong>
+              <span>Algoritmo:</span> <strong>Counting Sort</strong>
             </div>
           </div>
 
@@ -91,10 +94,22 @@ function CountingSortPage() {
 
           <div className="resultado-pie-info">
             <span>
-              ℹ️ Los {resultado.totalElementos} términos fueron ordenados con un rango de frecuencias k = {resultado.rangoK} en {resultado.tiempoMs?.toFixed(4)} milisegundos.
+              ℹ️ Los {resultado.totalElementos} términos fueron ordenados con un rango de frecuencias k = {resultado.rangoK || resultado.numeroCubetas} en {resultado.tiempoMs?.toFixed(4)} milisegundos mediante Counting Sort.
             </span>
           </div>
         </section>
+      )}
+
+      {/* Mensaje de bienvenida si aún no se ha ejecutado */}
+      {!resultado && !cargando && !error && (
+        <div className="bienvenida-box">
+          <div className="bienvenida-icon">📊</div>
+          <h3>Listo para ejecutar Counting Sort</h3>
+          <p>
+            Configura el tamaño del ranking deseado y el filtro de stopwords, luego presiona
+            <strong> "Ejecutar Counting Sort"</strong> para procesar el corpus en tiempo lineal O(n + k) y ver los resultados.
+          </p>
+        </div>
       )}
     </div>
   )

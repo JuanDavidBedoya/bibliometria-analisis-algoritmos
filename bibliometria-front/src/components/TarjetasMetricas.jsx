@@ -1,10 +1,10 @@
 /**
  * components/TarjetasMetricas.jsx
  *
- * Muestra el apartado con los parámetros y métricas del algoritmo Bucket Sort:
+ * Muestra el apartado con los parámetros y métricas del algoritmo ejecutado:
  *   - Número de términos distintos (n)
  *   - Frecuencia mínima / máxima (fmin / fmax)
- *   - Número de cubetas utilizado (B)
+ *   - Número de cubetas (B) en Bucket Sort o Rango de claves (k) en Counting Sort
  *   - Tiempo real de ejecución (ms)
  */
 
@@ -12,10 +12,15 @@ function TarjetasMetricas({
   tiempoMs = 0,
   totalElementos = 0,
   numeroCubetas = 0,
+  rangoK = 0,
   frecuenciaMinima = 1,
   frecuenciaMaxima = 1,
-  totalArticulos = 20
+  totalArticulos = 20,
+  algoritmo = 'Bucket Sort'
 }) {
+  const esCounting = algoritmo.toLowerCase().includes('counting')
+  const valorParametro = esCounting ? (rangoK || numeroCubetas) : numeroCubetas
+
   const metricas = [
     {
       id: 'terminos',
@@ -42,11 +47,13 @@ function TarjetasMetricas({
       )
     },
     {
-      id: 'cubetas',
-      valor: numeroCubetas,
-      etiqueta: 'Número de cubetas utilizado',
-      simbolo: '(B)',
-      detalle: `Partición óptima: B ≈ √n (${numeroCubetas} cubetas)`,
+      id: 'parametroClave',
+      valor: valorParametro,
+      etiqueta: esCounting ? 'Rango de claves cuantitativas' : 'Número de cubetas utilizado',
+      simbolo: esCounting ? '(k)' : '(B)',
+      detalle: esCounting
+        ? `Rango de frecuencias: k = f_máx - f_mín + 1 (${valorParametro})`
+        : `Partición óptima: B ≈ √n (${valorParametro} cubetas)`,
       icono: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
@@ -59,7 +66,7 @@ function TarjetasMetricas({
       id: 'tiempo',
       valor: `${tiempoMs.toFixed(3)} ms`,
       etiqueta: 'Tiempo empírico de ejecución',
-      simbolo: 'O(n + B)',
+      simbolo: esCounting ? 'O(n + k)' : 'O(n + B)',
       detalle: 'Medido con System.nanoTime() en backend',
       icono: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -74,7 +81,7 @@ function TarjetasMetricas({
     <div className="apartado-parametros">
       <div className="apartado-header">
         <span className="apartado-badge">APARTADO REQUERIDO · PARÁMETROS DEL ALGORITMO</span>
-        <h3 className="apartado-titulo">Métricas de Ejecución Bucket Sort</h3>
+        <h3 className="apartado-titulo">Métricas de Ejecución {algoritmo}</h3>
         <p className="apartado-sub">
           Parámetros formales de entrada y rendimiento asintótico del ordenamiento sobre el corpus ({totalArticulos} artículos).
         </p>

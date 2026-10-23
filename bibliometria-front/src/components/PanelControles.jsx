@@ -2,10 +2,18 @@
  * components/PanelControles.jsx
  *
  * Panel con los parámetros configurables del algoritmo (Top K y filtro de stopwords)
- * y el botón con efecto púrpura para disparar la ejecución del Bucket Sort.
+ * y el botón con efecto púrpura para disparar la ejecución del algoritmo seleccionado.
  */
 
-function PanelControles({ topK, setTopK, filtrarStopwords, setFiltrarStopwords, cargando, onEjecutar }) {
+function PanelControles({
+  topK,
+  setTopK,
+  filtrarStopwords,
+  setFiltrarStopwords,
+  cargando,
+  onEjecutar,
+  nombreAlgoritmo = 'Bucket Sort'
+}) {
   const atajosTop = [10, 15, 20, 30, 50]
 
   return (
@@ -14,7 +22,7 @@ function PanelControles({ topK, setTopK, filtrarStopwords, setFiltrarStopwords, 
         <div className="controles-header-badge">CONFIGURACIÓN DE ENTRADA</div>
         <h2>⚙️ Parámetros del Algoritmo</h2>
         <p className="controles-descripcion">
-          Ajusta los parámetros para ordenar los términos del vocabulario bibliométrico por frecuencia mediante Bucket Sort.
+          Ajusta los parámetros para ordenar los términos del vocabulario bibliométrico por frecuencia mediante {nombreAlgoritmo}.
         </p>
       </div>
 
@@ -83,14 +91,14 @@ function PanelControles({ topK, setTopK, filtrarStopwords, setFiltrarStopwords, 
           {cargando ? (
             <>
               <span className="spinner-btn"></span>
-              Procesando con Bucket Sort...
+              Procesando con {nombreAlgoritmo}...
             </>
           ) : (
             <>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polygon points="5 3 19 12 5 21 5 3" />
               </svg>
-              Ejecutar Bucket Sort
+              Ejecutar {nombreAlgoritmo}
             </>
           )}
         </button>

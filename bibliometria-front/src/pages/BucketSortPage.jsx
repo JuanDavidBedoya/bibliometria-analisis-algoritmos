@@ -56,6 +56,7 @@ function BucketSortPage() {
         setFiltrarStopwords={setFiltrarStopwords}
         cargando={cargando}
         onEjecutar={ejecutarBucketSort}
+        nombreAlgoritmo="Bucket Sort"
       />
 
       {/* Error si el backend no está disponible */}
@@ -72,6 +73,7 @@ function BucketSortPage() {
             frecuenciaMinima={resultado.frecuenciaMinima ?? 1}
             frecuenciaMaxima={resultado.frecuenciaMaxima ?? 1}
             totalArticulos={resultado.totalArticulos || 20}
+            algoritmo="Bucket Sort"
           />
 
           {/* Tabla de Ranking */}
@@ -92,7 +94,7 @@ function BucketSortPage() {
           <div className="resultado-pie-info">
             <span>
               ℹ️ Los {resultado.totalElementos} términos fueron distribuidos en {resultado.numeroCubetas} cubetas
-              en {resultado.tiempoMs?.toFixed(4)} milisegundos.
+              en {resultado.tiempoMs?.toFixed(4)} milisegundos mediante Bucket Sort.
             </span>
           </div>
         </section>
