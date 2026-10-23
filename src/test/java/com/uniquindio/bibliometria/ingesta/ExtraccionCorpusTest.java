@@ -1,21 +1,23 @@
 package com.uniquindio.bibliometria.ingesta;
 
-import com.uniquindio.bibliometria.preprocesamiento.ProcesadorResumen;
-import com.uniquindio.bibliometria.preprocesamiento.OpcionesPreprocesamiento;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
-import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
+
+import com.uniquindio.bibliometria.preprocesamiento.OpcionesPreprocesamiento;
+import com.uniquindio.bibliometria.preprocesamiento.ProcesadorResumen;
 
 /** Usa -Dbibliometria.corpus=<ZIP/carpeta> para indicar los documentos de prueba. */
 class ExtraccionCorpusTest {
@@ -86,11 +88,8 @@ class ExtraccionCorpusTest {
             "ChatGPT on the educational environment.", "in higher education."
     };
 
-    @BeforeAll static void cargar() throws Exception {
-        String corpus = System.getProperty("bibliometria.corpus");
-        assumeTrue(corpus != null && !corpus.isBlank(), "External PDFs were not provided");
-        articulos = ConsolaPdf.cargarCorpus(Path.of(corpus));
-        assertEquals(20, articulos.size(), "The controlled corpus must contain 20 documents");
+    public static List<ArticuloExtraido> getArticulos() {
+        return articulos;
     }
 
     @TestFactory Stream<DynamicTest> compruebaLosCamposDeLosVeinteDocumentos() {

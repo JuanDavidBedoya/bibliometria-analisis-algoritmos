@@ -1,0 +1,4 @@
+/* Estilos base mínimos — todo el diseño está en App.css */
+html, body, #root {
+  height: 100%;
+}
