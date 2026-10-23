@@ -1,42 +1,32 @@
 /**
- * App.jsx
- *
- * Componente raíz con el layout principal:
- *   - Sidebar lateral izquierdo con navegación en tonos morados
- *   - Área de contenido principal con cambio entre:
- *       1. "informacion"  - Información y títulos de los artículos del estudio
- *       2. "countingsort" - Ejecución de Counting Sort y métricas
- *       3. "bucketsort"   - Ejecución de Bucket Sort y métricas
+ * App.jsx - Componente raíz con layout principal en tonos verde claro.
  */
-
 import { useState } from 'react'
-import Sidebar         from './components/Sidebar'
-import Header          from './components/Header'
-import InformacionPage from './pages/InformacionPage'
+import Sidebar          from './components/Sidebar'
+import InformacionPage  from './pages/InformacionPage'
 import CountingSortPage from './pages/CountingSortPage'
-import BucketSortPage  from './pages/BucketSortPage'
+import BucketSortPage   from './pages/BucketSortPage'
 import './App.css'
 
 function App() {
-  const [ventanaActiva, setVentanaActiva] = useState('informacion')
+  const [ventanaActiva, setVentanaActiva]   = useState('informacion')
+  const [sidebarAbierto, setSidebarAbierto] = useState(true)
 
   return (
     <div className="layout-principal">
-      {/* Menú lateral izquierdo */}
       <Sidebar
         ventanaActiva={ventanaActiva}
         setVentanaActiva={setVentanaActiva}
         totalArticulos={20}
+        isOpen={sidebarAbierto}
+        setIsOpen={setSidebarAbierto}
       />
 
-      {/* Contenido principal */}
-      <div className="area-principal">
-        <Header ventanaActiva={ventanaActiva} />
-
+      <div className={`area-principal ${sidebarAbierto ? '' : 'sidebar-cerrado'}`}>
         <main className="contenido-vista">
-          {ventanaActiva === 'informacion' && <InformacionPage />}
+          {ventanaActiva === 'informacion'  && <InformacionPage />}
           {ventanaActiva === 'countingsort' && <CountingSortPage />}
-          {ventanaActiva === 'bucketsort' && <BucketSortPage />}
+          {ventanaActiva === 'bucketsort'   && <BucketSortPage />}
         </main>
       </div>
     </div>
