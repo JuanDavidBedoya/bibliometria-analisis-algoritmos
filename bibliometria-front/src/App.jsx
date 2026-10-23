@@ -1,27 +1,42 @@
 /**
  * App.jsx
  *
- * Componente raíz de la aplicación.
- * Su única responsabilidad es componer el layout global:
- *   - Header: título y datos del proyecto
- *   - BucketSortPage: toda la lógica y visualización del algoritmo
- *
- * Si en el futuro se agregan más páginas (Counting Sort, Radix Sort, etc.),
- * aquí se añadirían las rutas con React Router.
+ * Componente raíz con el layout principal:
+ *   - Sidebar lateral izquierdo con navegación en tonos morados
+ *   - Área de contenido principal con cambio entre:
+ *       1. "informacion" - Información y títulos de los artículos del estudio
+ *       2. "bucketsort"  - Ejecución de Bucket Sort y métricas
  */
 
-import Header         from './components/Header'
-import BucketSortPage from './pages/BucketSortPage'
+import { useState } from 'react'
+import Sidebar         from './components/Sidebar'
+import Header          from './components/Header'
+import InformacionPage from './pages/InformacionPage'
+import BucketSortPage  from './pages/BucketSortPage'
 import './App.css'
 
 function App() {
+  const [ventanaActiva, setVentanaActiva] = useState('informacion')
+
   return (
-    <>
-      <Header />
-      <main>
-        <BucketSortPage />
-      </main>
-    </>
+    <div className="layout-principal">
+      {/* Menú lateral izquierdo */}
+      <Sidebar
+        ventanaActiva={ventanaActiva}
+        setVentanaActiva={setVentanaActiva}
+        totalArticulos={20}
+      />
+
+      {/* Contenido principal */}
+      <div className="area-principal">
+        <Header ventanaActiva={ventanaActiva} />
+
+        <main className="contenido-vista">
+          {ventanaActiva === 'informacion' && <InformacionPage />}
+          {ventanaActiva === 'bucketsort' && <BucketSortPage />}
+        </main>
+      </div>
+    </div>
   )
 }
 

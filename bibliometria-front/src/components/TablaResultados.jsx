@@ -1,43 +1,70 @@
 /**
  * components/TablaResultados.jsx
  *
- * Tabla que muestra el ranking de términos más frecuentes ordenados por Bucket Sort.
- * Incluye una barra de progreso visual proporcional a la frecuencia máxima.
- *
- * Props:
- *   terminos {Array<{termino: string, frecuencia: number}>} - Lista ordenada de términos.
+ * Tabla estilizada con la paleta de morados para mostrar el ranking
+ * de términos más frecuentes tras el Bucket Sort.
  */
 
-function TablaResultados({ terminos }) {
-  // Frecuencia del término más alto (siempre el primero, ya viene ordenado)
-  const maxFrecuencia = terminos[0]?.frecuencia ?? 1
+function TablaResultados({ terminos = [] }) {
+  if (terminos.length === 0) {
+    return <p className="sin-datos">No hay términos para mostrar.</p>
+  }
+
+  // Frecuencia máxima dentro de la lista visible para escalar la barra visual al 100%
+  const maxFrecuencia = terminos[0]?.frecuencia || 1
 
   return (
-    <table className="tabla">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Término</th>
-          <th>Frecuencia</th>
-          <th>Barra</th>
-        </tr>
-      </thead>
-      <tbody>
-        {terminos.map((item, idx) => {
-          const porcentaje = Math.round((item.frecuencia / maxFrecuencia) * 100)
-          return (
-            <tr key={item.termino}>
-              <td className="rank">#{idx + 1}</td>
-              <td className="termino">{item.termino}</td>
-              <td className="freq">{item.frecuencia}</td>
-              <td className="barra-celda">
-                <div className="barra" style={{ width: `${porcentaje}%` }} />
-              </td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    <div className="tabla-wrapper">
+      <table className="tabla-morada">
+        <thead>
+          <tr>
+            <th className="th-puesto">Puesto</th>
+            <th className="th-termino">Término / Palabra</th>
+            <th className="th-frecuencia">Frecuencia</th>
+            <th className="th-barra">Distribución Visual</th>
+          </tr>
+        </thead>
+        <tbody>
+          {terminos.map((item, index) => {
+            const porcentaje = Math.round((item.frecuencia / maxFrecuencia) * 100)
+            const esTop1 = index === 0
+            const esTop2 = index === 1
+            const esTop3 = index === 2
+
+            let medallaClase = ''
+            if (esTop1) medallaClase = 'medalla-oro'
+            else if (esTop2) medallaClase = 'medalla-plata'
+            else if (esTop3) medallaClase = 'medalla-bronce'
+
+            return (
+              <tr key={item.termino} className={index < 3 ? 'fila-destacada' : ''}>
+                <td className="celda-puesto">
+                  <span className={`puesto-badge ${medallaClase}`}>
+                    #{index + 1}
+                  </span>
+                </td>
+                <td className="celda-termino">
+                  <span className="termino-texto">{item.termino}</span>
+                </td>
+                <td className="celda-frecuencia">
+                  <span className="frecuencia-valor">{item.frecuencia}</span>
+                  <span className="frecuencia-sub">ocurrencias</span>
+                </td>
+                <td className="celda-barra">
+                  <div className="barra-contenedor">
+                    <div
+                      className="barra-progreso-morada"
+                      style={{ width: `${porcentaje}%` }}
+                    />
+                    <span className="barra-porcentaje">{porcentaje}%</span>
+                  </div>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
   )
 }
 

@@ -1,16 +1,29 @@
 /**
  * components/Header.jsx
  *
- * Encabezado de la aplicación con el título y la descripción del proyecto.
- * Componente puramente visual, sin estado ni lógica.
+ * Barra superior (topbar) dentro del área de contenido principal.
  */
 
-function Header() {
+function Header({ ventanaActiva }) {
   return (
-    <header className="header">
-      <h1>📚 Análisis Bibliométrico</h1>
-      <p>Ordenamiento de términos con <strong>Bucket Sort</strong></p>
-      <p className="subtitulo">Algoritmos y Complejidad · Universidad del Quindío</p>
+    <header className="topbar">
+      <div className="topbar-breadcrumb">
+        <span className="breadcrumb-root">Sistema Bibliométrico</span>
+        <span className="breadcrumb-separator">/</span>
+        <span className="breadcrumb-active">
+          {ventanaActiva === 'informacion' ? 'Información del Corpus' : 'Ejecución Bucket Sort'}
+        </span>
+      </div>
+
+      <div className="topbar-actions">
+        <span className="topbar-badge-corpus">
+          <span className="punto-verde"></span>
+          20 Artículos Indexados
+        </span>
+        <span className="topbar-universidad">
+          Universidad del Quindío
+        </span>
+      </div>
     </header>
   )
 }

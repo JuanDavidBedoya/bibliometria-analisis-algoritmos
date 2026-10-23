@@ -15,11 +15,24 @@ public record ResultadoOrdenamiento(
         List<TerminoFrecuencia> terminosOrdenados,
         double tiempoMilisegundos,
         int totalElementos,
-        int numeroCubetas
+        int numeroCubetas,
+        int frecuenciaMinima,
+        int frecuenciaMaxima
 ) {
     public ResultadoOrdenamiento {
         Objects.requireNonNull(algoritmo, "algoritmo no puede ser nulo");
         terminosOrdenados = terminosOrdenados == null ? List.of() : List.copyOf(terminosOrdenados);
+    }
+
+    /** Constructor de compatibilidad sin frecuencia mínima ni máxima explícitas. */
+    public ResultadoOrdenamiento(
+            String algoritmo,
+            List<TerminoFrecuencia> terminosOrdenados,
+            double tiempoMilisegundos,
+            int totalElementos,
+            int numeroCubetas
+    ) {
+        this(algoritmo, terminosOrdenados, tiempoMilisegundos, totalElementos, numeroCubetas, 0, 0);
     }
 
     /**
@@ -31,15 +44,18 @@ public record ResultadoOrdenamiento(
     }
 
     /**
-     * Imprime una tabla formateada en consola con el Top K de términos más frecuentes.
+     * Imprime una tabla formateada en consola con el Top K de términos más frecuentes
+     * y los parámetros requeridos del algoritmo.
      */
     public void imprimirTop(int k) {
         List<TerminoFrecuencia> top = getTop(k);
         System.out.println("=========================================================================");
         System.out.printf("  RANKING TOP %d - ALGORITMO: %s%n", top.size(), algoritmo.toUpperCase());
         System.out.println("=========================================================================");
-        System.out.printf("  Total elementos ordenados: %d | Tiempo real: %.4f ms | Cubetas: %d%n",
-                totalElementos, tiempoMilisegundos, numeroCubetas);
+        System.out.printf("  Número de términos distintos (n): %d%n", totalElementos);
+        System.out.printf("  Frecuencia mínima / máxima:       %d / %d%n", frecuenciaMinima, frecuenciaMaxima);
+        System.out.printf("  Número de cubetas utilizado (B):  %d%n", numeroCubetas);
+        System.out.printf("  Tiempo real de ejecución:         %.4f ms%n", tiempoMilisegundos);
         System.out.println("-------------------------------------------------------------------------");
         System.out.printf("  %-6s | %-30s | %-12s%n", "PUESTO", "TÉRMINO", "FRECUENCIA");
         System.out.println("-------------------------------------------------------------------------");

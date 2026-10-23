@@ -13,13 +13,11 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Controlador REST que expone el algoritmo Bucket Sort a través de HTTP.
+ * Controlador REST que expone los datos del corpus y el algoritmo Bucket Sort a través de HTTP.
  *
  * Endpoints disponibles:
  *   GET /api/bucket-sort?topK=15&filtrarStopwords=true
- *
- * El frontend React llama a este endpoint para obtener el ranking de términos
- * más frecuentes en el corpus bibliométrico ordenados por Bucket Sort.
+ *   GET /api/articulos
  */
 @RestController
 @RequestMapping("/api")
@@ -37,7 +35,31 @@ public class BucketSortController {
     }
 
     /**
-     * Ejecuta el algoritmo Bucket Sort sobre el corpus y devuelve el ranking de términos.
+     * Retorna la lista de todos los artículos científicos utilizados en el estudio.
+     */
+    @GetMapping("/articulos")
+    public ResponseEntity<List<ArticuloResumenDto>> obtenerArticulos() {
+        try {
+            List<ArticuloDocumental> corpus = preprocesamientoService.obtenerCorpus(RUTA_PDFS, RUTA_JSON);
+            List<ArticuloResumenDto> dtos = corpus.stream()
+                    .map(a -> new ArticuloResumenDto(
+                            a.id(),
+                            a.archivo(),
+                            a.titulo(),
+                            a.autores(),
+                            a.abstractOriginal(),
+                            a.totalTokens()
+                    ))
+                    .toList();
+            return ResponseEntity.ok(dtos);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Ejecuta el algoritmo Bucket Sort sobre el corpus y devuelve el ranking de términos
+     * junto con los parámetros analíticos (n, B, min, max, tiempo).
      *
      * @param topK            Número de términos a retornar en el ranking (por defecto 15).
      * @param filtrarStopwords Si es true, excluye palabras vacías como "the", "and", etc. (por defecto true).
@@ -69,6 +91,8 @@ public class BucketSortController {
                     resultado.tiempoMilisegundos(),
                     resultado.totalElementos(),
                     resultado.numeroCubetas(),
+                    resultado.frecuenciaMinima(),
+                    resultado.frecuenciaMaxima(),
                     topK,
                     filtrarStopwords,
                     corpus.size()
@@ -83,12 +107,23 @@ public class BucketSortController {
     }
 
     // ─── DTOs (Data Transfer Objects) ───────────────────────────────────────────
-    // Son registros simples que Spring Boot serializa automáticamente a JSON con Jackson.
 
     /**
      * DTO para cada término y su frecuencia en el ranking.
      */
     public record TerminoFrecuenciaDto(String termino, int frecuencia) {}
+
+    /**
+     * DTO para los artículos del estudio mostrados en la ventana de información.
+     */
+    public record ArticuloResumenDto(
+            int id,
+            String archivo,
+            String titulo,
+            List<String> autores,
+            String resumenOriginal,
+            int totalPalabras
+    ) {}
 
     /**
      * DTO completo de la respuesta del endpoint /api/bucket-sort.
@@ -99,6 +134,8 @@ public class BucketSortController {
             double tiempoMs,
             int totalElementos,
             int numeroCubetas,
+            int frecuenciaMinima,
+            int frecuenciaMaxima,
             int topK,
             boolean stopwordsFiltradas,
             int totalArticulos

@@ -50,7 +50,7 @@ public final class BucketSort {
      */
     public static ResultadoOrdenamiento ordenarDescendente(List<TerminoFrecuencia> lista) {
         if (lista == null || lista.isEmpty()) {
-            return new ResultadoOrdenamiento("Bucket Sort", List.of(), 0.0, 0, 0);
+            return new ResultadoOrdenamiento("Bucket Sort", List.of(), 0.0, 0, 0, 0, 0);
         }
         int numCubetas = calcularNumeroCubetasOptimo(lista.size());
         return ordenar(lista, numCubetas, true);
@@ -68,7 +68,7 @@ public final class BucketSort {
     @SuppressWarnings("unchecked")
     public static ResultadoOrdenamiento ordenar(List<TerminoFrecuencia> lista, int numCubetas, boolean descendente) {
         if (lista == null || lista.isEmpty()) {
-            return new ResultadoOrdenamiento("Bucket Sort", List.of(), 0.0, 0, numCubetas);
+            return new ResultadoOrdenamiento("Bucket Sort", List.of(), 0.0, 0, numCubetas, 0, 0);
         }
 
         int n = lista.size();
@@ -83,7 +83,8 @@ public final class BucketSort {
         if (n == 1) {
             long tiempoFinNano = System.nanoTime();
             double duracionMs = (tiempoFinNano - tiempoInicioNano) / 1_000_000.0;
-            return new ResultadoOrdenamiento("Bucket Sort", new ArrayList<>(lista), duracionMs, n, numCubetas);
+            int f = lista.get(0).getFrecuencia();
+            return new ResultadoOrdenamiento("Bucket Sort", new ArrayList<>(lista), duracionMs, n, numCubetas, f, f);
         }
 
         // -------------------------------------------------------------------------
@@ -106,7 +107,7 @@ public final class BucketSort {
         if (minFrecuencia == maxFrecuencia) {
             long tiempoFinNano = System.nanoTime();
             double duracionMs = (tiempoFinNano - tiempoInicioNano) / 1_000_000.0;
-            return new ResultadoOrdenamiento("Bucket Sort", new ArrayList<>(lista), duracionMs, n, numCubetas);
+            return new ResultadoOrdenamiento("Bucket Sort", new ArrayList<>(lista), duracionMs, n, numCubetas, minFrecuencia, maxFrecuencia);
         }
 
         // Ajustar número de cubetas si el rango de valores es menor que B
@@ -165,7 +166,7 @@ public final class BucketSort {
         long tiempoFinNano = System.nanoTime();
         double duracionMs = (tiempoFinNano - tiempoInicioNano) / 1_000_000.0;
 
-        return new ResultadoOrdenamiento("Bucket Sort", resultado, duracionMs, n, numCubetas);
+        return new ResultadoOrdenamiento("Bucket Sort", resultado, duracionMs, n, numCubetas, minFrecuencia, maxFrecuencia);
     }
 
     /**

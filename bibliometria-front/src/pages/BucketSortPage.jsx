@@ -1,12 +1,9 @@
 /**
  * pages/BucketSortPage.jsx
  *
- * Página principal de la aplicación. Orquesta todos los componentes
- * y contiene el estado y la lógica de negocio del flujo de Bucket Sort:
- *
- *   1. El usuario configura los parámetros (Top K, stopwords).
- *   2. Presiona el botón → se llama a la API del backend.
- *   3. Se muestran las métricas y la tabla de resultados.
+ * Ventana 2: Ejecución interactiva del algoritmo Bucket Sort.
+ * Muestra el panel de configuración, las métricas del algoritmo requeridas
+ * (n, B, fmin/fmax) y el ranking en tabla visual.
  */
 
 import { useState } from 'react'
@@ -17,20 +14,16 @@ import TarjetasMetricas from '../components/TarjetasMetricas'
 import TablaResultados  from '../components/TablaResultados'
 
 function BucketSortPage() {
-  // ─── Estado de parámetros ──────────────────────────────────────────────────
   const [topK, setTopK]                         = useState(15)
   const [filtrarStopwords, setFiltrarStopwords] = useState(true)
 
-  // ─── Estado de la petición ─────────────────────────────────────────────────
   const [resultado, setResultado] = useState(null)
   const [cargando, setCargando]   = useState(false)
   const [error, setError]         = useState(null)
 
-  // ─── Llamada al backend ────────────────────────────────────────────────────
   async function ejecutarBucketSort() {
     setCargando(true)
     setError(null)
-    setResultado(null)
 
     try {
       const datos = await obtenerResultadoBucketSort(topK, filtrarStopwords)
@@ -42,11 +35,20 @@ function BucketSortPage() {
     }
   }
 
-  // ─── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="app">
+    <div className="pagina-contenedor">
+      {/* Encabezado */}
+      <header className="pagina-header">
+        <div className="header-badge">VENTANA 2 · ANÁLISIS DE ALGORITMOS</div>
+        <h1>Algoritmo Bucket Sort (Ordenamiento por Cubetas)</h1>
+        <p className="pagina-descripcion">
+          Algoritmo de distribución lineal con complejidad esperada <strong>O(n + B)</strong>.
+          Mapea las frecuencias de los términos a <em>B</em> cubetas mediante dispersión cuantitativa
+          y realiza inserción interna para generar el ranking bibliométrico sin requerir comparaciones globales.
+        </p>
+      </header>
 
-      {/* Panel de parámetros y botón de ejecución */}
+      {/* Panel de Controles */}
       <PanelControles
         topK={topK}
         setTopK={setTopK}
@@ -56,32 +58,57 @@ function BucketSortPage() {
         onEjecutar={ejecutarBucketSort}
       />
 
-      {/* Error de conexión o servidor */}
+      {/* Error si el backend no está disponible */}
       {error && <MensajeError mensaje={error} />}
 
-      {/* Resultados del ordenamiento */}
+      {/* Resultados */}
       {resultado && (
-        <section className="resultados">
-
+        <section className="seccion-resultados-morada">
+          {/* APARTADO REQUERIDO: Métricas y Parámetros */}
           <TarjetasMetricas
-            tiempoMs={resultado.tiempoMs}
-            totalElementos={resultado.totalElementos}
-            numeroCubetas={resultado.numeroCubetas}
-            totalArticulos={resultado.totalArticulos}
+            tiempoMs={resultado.tiempoMs || 0}
+            totalElementos={resultado.totalElementos || 0}
+            numeroCubetas={resultado.numeroCubetas || 0}
+            frecuenciaMinima={resultado.frecuenciaMinima ?? 1}
+            frecuenciaMaxima={resultado.frecuenciaMaxima ?? 1}
+            totalArticulos={resultado.totalArticulos || 20}
           />
 
-          <h2>🏆 Top {resultado.topK} — Términos más frecuentes</h2>
+          {/* Tabla de Ranking */}
+          <div className="ranking-header-row">
+            <div>
+              <h2>🏆 Ranking de Términos (Top {resultado.topK})</h2>
+              <span className="ranking-subtitulo">
+                Vocabulario {resultado.stopwordsFiltradas ? 'Temático (sin stopwords)' : 'Completo (con stopwords)'}
+              </span>
+            </div>
+            <div className="chip-resumen-algoritmo">
+              <span>Algoritmo:</span> <strong>{resultado.algoritmo}</strong>
+            </div>
+          </div>
 
           <TablaResultados terminos={resultado.terminos} />
 
-          <p className="nota">
-            Algoritmo: <strong>{resultado.algoritmo}</strong> ·{' '}
-            Stopwords filtradas: <strong>{resultado.stopwordsFiltradas ? 'Sí' : 'No'}</strong>
-          </p>
-
+          <div className="resultado-pie-info">
+            <span>
+              ℹ️ Los {resultado.totalElementos} términos fueron distribuidos en {resultado.numeroCubetas} cubetas
+              en {resultado.tiempoMs?.toFixed(4)} milisegundos.
+            </span>
+          </div>
         </section>
       )}
 
+      {/* Mensaje de bienvenida si aún no se ha ejecutado */}
+      {!resultado && !cargando && !error && (
+        <div className="bienvenida-box">
+          <div className="bienvenida-icon">✨</div>
+          <h3>Listo para ejecutar el algoritmo</h3>
+          <p>
+            Configura el tamaño del ranking deseado y el filtro de stopwords, luego presiona
+            <strong> "Ejecutar Bucket Sort"</strong> para procesar el corpus y ver las métricas de cubetas y frecuencias.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
