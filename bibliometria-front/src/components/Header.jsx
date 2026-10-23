@@ -5,13 +5,19 @@
  */
 
 function Header({ ventanaActiva }) {
+  const titulos = {
+    informacion: 'Información del Corpus',
+    countingsort: 'Ejecución Counting Sort',
+    bucketsort: 'Ejecución Bucket Sort'
+  }
+
   return (
     <header className="topbar">
       <div className="topbar-breadcrumb">
         <span className="breadcrumb-root">Sistema Bibliométrico</span>
         <span className="breadcrumb-separator">/</span>
         <span className="breadcrumb-active">
-          {ventanaActiva === 'informacion' ? 'Información del Corpus' : 'Ejecución Bucket Sort'}
+          {titulos[ventanaActiva] || 'Ejecución de Algoritmo'}
         </span>
       </div>
 

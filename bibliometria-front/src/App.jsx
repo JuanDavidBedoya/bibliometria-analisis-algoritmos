@@ -4,14 +4,16 @@
  * Componente raíz con el layout principal:
  *   - Sidebar lateral izquierdo con navegación en tonos morados
  *   - Área de contenido principal con cambio entre:
- *       1. "informacion" - Información y títulos de los artículos del estudio
- *       2. "bucketsort"  - Ejecución de Bucket Sort y métricas
+ *       1. "informacion"  - Información y títulos de los artículos del estudio
+ *       2. "countingsort" - Ejecución de Counting Sort y métricas
+ *       3. "bucketsort"   - Ejecución de Bucket Sort y métricas
  */
 
 import { useState } from 'react'
 import Sidebar         from './components/Sidebar'
 import Header          from './components/Header'
 import InformacionPage from './pages/InformacionPage'
+import CountingSortPage from './pages/CountingSortPage'
 import BucketSortPage  from './pages/BucketSortPage'
 import './App.css'
 
@@ -33,6 +35,7 @@ function App() {
 
         <main className="contenido-vista">
           {ventanaActiva === 'informacion' && <InformacionPage />}
+          {ventanaActiva === 'countingsort' && <CountingSortPage />}
           {ventanaActiva === 'bucketsort' && <BucketSortPage />}
         </main>
       </div>

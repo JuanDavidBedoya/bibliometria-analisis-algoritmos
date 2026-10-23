@@ -54,7 +54,11 @@ public record ResultadoOrdenamiento(
         System.out.println("=========================================================================");
         System.out.printf("  Número de términos distintos (n): %d%n", totalElementos);
         System.out.printf("  Frecuencia mínima / máxima:       %d / %d%n", frecuenciaMinima, frecuenciaMaxima);
-        System.out.printf("  Número de cubetas utilizado (B):  %d%n", numeroCubetas);
+        if ("Counting Sort".equalsIgnoreCase(algoritmo)) {
+            System.out.printf("  Rango de claves k (max-min+1):    %d%n", numeroCubetas);
+        } else {
+            System.out.printf("  Número de cubetas utilizado (B):  %d%n", numeroCubetas);
+        }
         System.out.printf("  Tiempo real de ejecución:         %.4f ms%n", tiempoMilisegundos);
         System.out.println("-------------------------------------------------------------------------");
         System.out.printf("  %-6s | %-30s | %-12s%n", "PUESTO", "TÉRMINO", "FRECUENCIA");

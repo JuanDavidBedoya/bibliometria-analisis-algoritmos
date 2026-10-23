@@ -1,4 +1,1 @@
-com\uniquindio\bibliometria\algoritmos\similitud\test.class
-com\uniquindio\bibliometria\controller\test.class
-com\uniquindio\bibliometria\algoritmos\agrupamiento\test.class
-com\uniquindio\bibliometria\service\test.class
+com\uniquindio\bibliometria\algoritmos\ordenamiento\CountingSortTest.class

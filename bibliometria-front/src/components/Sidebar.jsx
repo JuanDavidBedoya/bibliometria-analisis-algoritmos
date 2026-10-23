@@ -2,9 +2,10 @@
  * components/Sidebar.jsx
  *
  * Menú lateral izquierdo con la paleta de colores morados.
- * Permite alternar entre las dos ventanas de la aplicación:
- *   1. "informacion" - Información y títulos de los artículos del estudio
- *   2. "bucketsort"  - Ejecución y análisis del algoritmo Bucket Sort
+ * Permite alternar entre las tres ventanas de la aplicación:
+ *   1. "informacion"  - Información y títulos de los artículos del estudio
+ *   2. "countingsort" - Ejecución y análisis del algoritmo Counting Sort
+ *   3. "bucketsort"   - Ejecución y análisis del algoritmo Bucket Sort
  */
 
 function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20 }) {
@@ -22,6 +23,19 @@ function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20 }) {
         </svg>
       ),
       badge: `${totalArticulos} arts.`
+    },
+    {
+      id: 'countingsort',
+      titulo: 'Algoritmo Counting Sort',
+      subtitulo: 'Conteo y prefijos O(n+k)',
+      icono: (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10" />
+          <line x1="12" y1="20" x2="12" y2="4" />
+          <line x1="6" y1="20" x2="6" y2="14" />
+        </svg>
+      ),
+      badge: 'O(n+k)'
     },
     {
       id: 'bucketsort',
