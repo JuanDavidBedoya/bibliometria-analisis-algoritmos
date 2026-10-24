@@ -1,16 +1,22 @@
 package com.uniquindio.bibliometria.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.uniquindio.bibliometria.algoritmos.ordenamiento.BucketSort;
 import com.uniquindio.bibliometria.algoritmos.ordenamiento.ResultadoOrdenamiento;
 import com.uniquindio.bibliometria.modelo.ArticuloDocumental;
 import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 import com.uniquindio.bibliometria.service.PreprocesamientoService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Controlador REST que expone los datos del corpus y el algoritmo Bucket Sort a través de HTTP.
@@ -24,14 +30,32 @@ import java.util.List;
 @CrossOrigin(origins = "*")   // Permite llamadas desde cualquier origen (React en localhost:5173)
 public class BucketSortController {
 
-    // Rutas del corpus (relativas al directorio de trabajo del proyecto)
-    private static final Path RUTA_PDFS = Path.of("datos", "pdfs_originales");
-    private static final Path RUTA_JSON = Path.of("datos", "procesados", "corpus_procesado.json");
-
     private final PreprocesamientoService preprocesamientoService;
 
     public BucketSortController() {
         this.preprocesamientoService = new PreprocesamientoService();
+    }
+
+    /**
+     * Resuelve de forma robusta la ruta al JSON preprocesado del corpus.
+     */
+    private Path resolverRutaJson() {
+        Path p1 = Path.of("datos", "procesados", "corpus_procesado.json");
+        if (Files.exists(p1)) return p1;
+        Path p2 = Path.of("..", "datos", "procesados", "corpus_procesado.json");
+        if (Files.exists(p2)) return p2;
+        return p1;
+    }
+
+    /**
+     * Resuelve de forma robusta la ruta a los PDFs originales.
+     */
+    private Path resolverRutaPdfs() {
+        Path p1 = Path.of("datos", "pdfs_originales");
+        if (Files.exists(p1)) return p1;
+        Path p2 = Path.of("..", "datos", "pdfs_originales");
+        if (Files.exists(p2)) return p2;
+        return p1;
     }
 
     /**
@@ -40,7 +64,10 @@ public class BucketSortController {
     @GetMapping("/articulos")
     public ResponseEntity<List<ArticuloResumenDto>> obtenerArticulos() {
         try {
-            List<ArticuloDocumental> corpus = preprocesamientoService.obtenerCorpus(RUTA_PDFS, RUTA_JSON);
+            Path rutaPdfs = resolverRutaPdfs();
+            Path rutaJson = resolverRutaJson();
+
+            List<ArticuloDocumental> corpus = preprocesamientoService.obtenerCorpus(rutaPdfs, rutaJson);
             List<ArticuloResumenDto> dtos = corpus.stream()
                     .map(a -> new ArticuloResumenDto(
                             a.id(),
@@ -71,8 +98,11 @@ public class BucketSortController {
             @RequestParam(defaultValue = "true") boolean filtrarStopwords) {
 
         try {
+            Path rutaPdfs = resolverRutaPdfs();
+            Path rutaJson = resolverRutaJson();
+
             // 1. Cargar el corpus desde el JSON ya generado (o procesarlo si no existe)
-            List<ArticuloDocumental> corpus = preprocesamientoService.obtenerCorpus(RUTA_PDFS, RUTA_JSON);
+            List<ArticuloDocumental> corpus = preprocesamientoService.obtenerCorpus(rutaPdfs, rutaJson);
 
             // 2. Extraer frecuencias globales de los tokens del corpus
             List<TerminoFrecuencia> frecuencias = preprocesamientoService.extraerFrecuenciasGlobales(corpus, filtrarStopwords);
@@ -101,21 +131,14 @@ public class BucketSortController {
             return ResponseEntity.ok(respuesta);
 
         } catch (IOException e) {
-            // Si hay un error al leer el JSON o los PDFs, devolver 500
             return ResponseEntity.internalServerError().build();
         }
     }
 
     // ─── DTOs (Data Transfer Objects) ───────────────────────────────────────────
 
-    /**
-     * DTO para cada término y su frecuencia en el ranking.
-     */
     public record TerminoFrecuenciaDto(String termino, int frecuencia) {}
 
-    /**
-     * DTO para los artículos del estudio mostrados en la ventana de información.
-     */
     public record ArticuloResumenDto(
             int id,
             String archivo,
@@ -125,9 +148,6 @@ public class BucketSortController {
             int totalPalabras
     ) {}
 
-    /**
-     * DTO completo de la respuesta del endpoint /api/bucket-sort.
-     */
     public record RespuestaBucketSort(
             String algoritmo,
             List<TerminoFrecuenciaDto> terminos,

@@ -1,10 +1,12 @@
 /**
  * pages/InformacionPage.jsx
- * Ventana 1: Hero section + grilla de tarjetas de artículos.
- * Paleta: verde claro.
+ *
+ * Ventana 1: Información y corpus de artículos científicos.
+ * Los datos se consultan exclusivamente desde el backend Spring Boot (/api/articulos).
  */
 import { useState, useEffect } from 'react'
-import { obtenerArticulos }    from '../api/bucketSortApi'
+import { obtenerArticulos } from '../api/bucketSortApi'
+import MensajeError from '../components/MensajeError'
 import logoUQ from '../assets/Logo UQ.jpg'
 
 const COLORES_GRADIENTE = [
@@ -17,44 +19,43 @@ const COLORES_GRADIENTE = [
 ]
 
 function InformacionPage() {
-  const [articulos, setArticulos]   = useState([])
-  const [busqueda, setBusqueda]     = useState('')
+  const [articulos, setArticulos] = useState([])
+  const [busqueda, setBusqueda] = useState('')
   const [expandidoId, setExpandidoId] = useState(null)
-  const [cargando, setCargando]     = useState(true)
+  const [cargando, setCargando] = useState(true)
+  const [error, setError] = useState(null)
 
-  useEffect(() => {
-    async function cargar() {
-      setCargando(true)
+  async function cargar() {
+    setCargando(true)
+    setError(null)
+    try {
       const datos = await obtenerArticulos()
       setArticulos(datos)
+    } catch (err) {
+      setError(err.message || 'Error al obtener los artículos desde el servidor.')
+    } finally {
       setCargando(false)
     }
+  }
+
+  useEffect(() => {
     cargar()
   }, [])
 
   const filtrados = articulos.filter(a => {
     const termino = busqueda.toLowerCase().trim()
     if (!termino) return true
-    const titulo  = (a.titulo  || '').toLowerCase()
+    const titulo = (a.titulo || '').toLowerCase()
     const archivo = (a.archivo || '').toLowerCase()
     const autores = (a.autores || []).join(' ').toLowerCase()
     return titulo.includes(termino) || autores.includes(termino) || archivo.includes(termino)
   })
 
-  const totalPalabras = articulos.reduce((acc, a) => acc + (a.totalPalabras || 0), 0)
-
-  function scrollArticulos() {
-    document.getElementById('seccion-articulos')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   return (
     <div className="info-pagina">
-
       {/* ── HERO ─────────────────────────────────────────── */}
       <section className="hero-section">
         <div className="hero-izquierda">
-          <div className="hero-badge">✨ Análisis de Algoritmos 2026-2</div>
-
           <h1 className="hero-titulo">
             Proyecto Final<br />
             <span className="hero-titulo-acento">Análisis de Algoritmos</span>
@@ -74,44 +75,11 @@ function InformacionPage() {
               <span className="equipo-dot"></span>Juan Steban Martínez Bermúdez
             </div>
           </div>
-
-          <div className="hero-buttons">
-            <button className="btn-hero-primary" onClick={scrollArticulos}>
-              Ver Artículos →
-            </button>
-            <button className="btn-hero-outline">
-              Explorar Algoritmos
-            </button>
-          </div>
-
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <span className="hero-stat-num">{articulos.length || 20}</span>
-              <span className="hero-stat-lbl">Artículos</span>
-            </div>
-            <div className="hero-stat-sep"></div>
-            <div className="hero-stat">
-              <span className="hero-stat-num">{totalPalabras > 0 ? totalPalabras.toLocaleString() : '1012+'}</span>
-              <span className="hero-stat-lbl">Términos únicos</span>
-            </div>
-            <div className="hero-stat-sep"></div>
-            <div className="hero-stat">
-              <span className="hero-stat-num">AIEd</span>
-              <span className="hero-stat-lbl">Dominio temático</span>
-            </div>
-          </div>
         </div>
 
         <div className="hero-derecha">
           <div className="hero-img-wrapper">
             <img src={logoUQ} alt="Universidad del Quindío" className="hero-img" />
-            <div className="hero-floating-card">
-              <span className="floating-card-icon">🎓</span>
-              <div className="floating-card-texto">
-                <strong>Universidad del Quindío</strong>
-                <span>Ingeniería de Sistemas · 2026</span>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -120,38 +88,52 @@ function InformacionPage() {
       <section id="seccion-articulos" className="articulos-section">
         <div className="articulos-section-header">
           <h2>Artículos del Corpus Bibliométrico</h2>
-          <p>Investigaciones sobre Inteligencia Artificial en Educación (AIEd)</p>
+          <p>Investigaciones sobre Inteligencia Artificial en Educación (AIEd) consultadas desde el Backend</p>
         </div>
 
+        {/* Error si no se puede conectar con el backend */}
+        {error && (
+          <div className="error-contenedor-articulos">
+            <MensajeError mensaje={error} />
+            <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+              <button className="btn-secundario" onClick={cargar}>
+                ↻ Reintentar consulta al Backend
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Búsqueda */}
-        <div className="busqueda-barra">
-          <div className="busqueda-input-wrapper">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Buscar por título, autor o archivo..."
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-            />
-            {busqueda && (
-              <button className="limpiar-busqueda" onClick={() => setBusqueda('')}>✕</button>
-            )}
+        {!error && (
+          <div className="busqueda-barra">
+            <div className="busqueda-input-wrapper">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Buscar por título, autor o archivo..."
+                value={busqueda}
+                onChange={e => setBusqueda(e.target.value)}
+              />
+              {busqueda && (
+                <button className="limpiar-busqueda" onClick={() => setBusqueda('')}>✕</button>
+              )}
+            </div>
+            <div className="conteo-articulos">
+              Mostrando <strong>{filtrados.length}</strong> de {articulos.length} artículos del backend
+            </div>
           </div>
-          <div className="conteo-articulos">
-            Mostrando <strong>{filtrados.length}</strong> de {articulos.length} artículos
-          </div>
-        </div>
+        )}
 
         {/* Grid de tarjetas */}
         {cargando ? (
           <div className="cargando-estado">
             <div className="spinner"></div>
-            <p>Cargando artículos del corpus documental...</p>
+            <p>Consultando artículos al Backend Spring Boot (/api/articulos)...</p>
           </div>
-        ) : filtrados.length === 0 ? (
+        ) : error ? null : filtrados.length === 0 ? (
           <div className="sin-resultados">
             <p>No se encontraron artículos con <strong>"{busqueda}"</strong>.</p>
             <button className="btn-secundario" onClick={() => setBusqueda('')}>Limpiar filtro</button>
@@ -159,11 +141,11 @@ function InformacionPage() {
         ) : (
           <div className="cards-grid">
             {filtrados.map((art, idx) => {
-              const expandido  = expandidoId === art.id
-              const gradiente  = COLORES_GRADIENTE[idx % COLORES_GRADIENTE.length]
+              const expandido = expandidoId === art.id
+              const gradiente = COLORES_GRADIENTE[idx % COLORES_GRADIENTE.length]
               const primerAutor = (art.autores || [])[0] || ''
-              const masAutores  = (art.autores || []).length > 1 ? ` et al.` : ''
-              const extracto    = (art.resumenOriginal || '').slice(0, 110) + ((art.resumenOriginal || '').length > 110 ? '…' : '')
+              const masAutores = (art.autores || []).length > 1 ? ` et al.` : ''
+              const extracto = (art.resumenOriginal || '').slice(0, 110) + ((art.resumenOriginal || '').length > 110 ? '…' : '')
 
               return (
                 <article key={art.id} className={`art-card ${expandido ? 'expandida' : ''}`}>

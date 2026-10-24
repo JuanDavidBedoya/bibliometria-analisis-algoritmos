@@ -1,30 +1,35 @@
 /**
  * pages/BucketSortPage.jsx
  *
- * Ventana 2: Ejecución interactiva del algoritmo Bucket Sort.
- * Muestra el panel de configuración, las métricas del algoritmo requeridas
- * (n, B, fmin/fmax) y el ranking en tabla visual.
+ * Interfaz minimalista de Bucket Sort en paleta de colores VERDE.
+ * Características:
+ *   - Solo muestra la tabla de resultados (se removió el gráfico de barras).
+ *   - No se ejecuta automáticamente al entrar; solo al presionar "Ejecutar Bucket Sort".
+ *   - Consulta exclusivamente al backend Spring Boot.
+ *   - Controles estilo pills (Top K, filtro stopwords, botón de ejecución).
+ *   - Métricas y parámetros del algoritmo (n, B, fmin/fmax, tiempo).
+ *   - Tabla de resultados a ancho completo con ranking detallado.
  */
 
 import { useState } from 'react'
 import { obtenerResultadoBucketSort } from '../api/bucketSortApi'
-import PanelControles   from '../components/PanelControles'
-import MensajeError     from '../components/MensajeError'
-import TarjetasMetricas from '../components/TarjetasMetricas'
-import TablaResultados  from '../components/TablaResultados'
+import TablaResultadosMinimal from '../components/TablaResultadosMinimal'
+import MetricasMinimal from '../components/MetricasMinimal'
+import MensajeError from '../components/MensajeError'
 
 function BucketSortPage() {
-  const [topK, setTopK]                         = useState(15)
+  const [topK, setTopK] = useState(15)
   const [filtrarStopwords, setFiltrarStopwords] = useState(true)
-
   const [resultado, setResultado] = useState(null)
-  const [cargando, setCargando]   = useState(false)
-  const [error, setError]         = useState(null)
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState(null)
 
-  async function ejecutarBucketSort() {
+  const atajosTop = [10, 15, 20, 30, 50]
+
+  // El algoritmo SOLO se ejecuta cuando el usuario hace clic en el botón
+  async function handleEjecutarBucketSort() {
     setCargando(true)
     setError(null)
-
     try {
       const datos = await obtenerResultadoBucketSort(topK, filtrarStopwords)
       setResultado(datos)
@@ -35,38 +40,100 @@ function BucketSortPage() {
     }
   }
 
+  const terminos = resultado?.terminos || []
+
   return (
-    <div className="pagina-contenedor">
-      {/* Encabezado */}
-      <header className="pagina-header">
-        <div className="header-badge">VENTANA 2 · ANÁLISIS DE ALGORITMOS</div>
-        <h1>Algoritmo Bucket Sort (Ordenamiento por Cubetas)</h1>
-        <p className="pagina-descripcion">
-          Algoritmo de distribución lineal con complejidad esperada <strong>O(n + B)</strong>.
-          Mapea las frecuencias de los términos a <em>B</em> cubetas mediante dispersión cuantitativa
-          y realiza inserción interna para generar el ranking bibliométrico sin requerir comparaciones globales.
+    <div className="dashboard-minimal-container dashboard-verde">
+      {/* ─── BARRA DE PESTAÑAS / PILLS EN VERDE ─── */}
+      <div className="pills-nav-bar">
+        <div className="pills-nav-left">
+          <div className="pill-item pill-active-verde">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" />
+              <path d="M12 22V12" />
+            </svg>
+            <span>Análisis Bucket Sort</span>
+          </div>
+
+          {/* Atajos de Top K estilo pill */}
+          <div className="pills-subgroup pills-subgroup-verde">
+            {atajosTop.map(k => (
+              <button
+                key={k}
+                className={`pill-item pill-choice ${topK === k ? 'pill-selected-verde' : ''}`}
+                onClick={() => setTopK(k)}
+                disabled={cargando}
+              >
+                Top {k}
+              </button>
+            ))}
+          </div>
+
+          {/* Filtro Stopwords en pastilla */}
+          <button
+            className={`pill-item pill-choice pill-toggle ${filtrarStopwords ? 'pill-on-verde' : ''}`}
+            onClick={() => setFiltrarStopwords(!filtrarStopwords)}
+            disabled={cargando}
+            title={filtrarStopwords ? 'Stopwords excluidas (vocabulario temático)' : 'Stopwords incluidas'}
+          >
+            <span className="pill-indicator-dot pill-indicator-dot-verde"></span>
+            <span>Stopwords: {filtrarStopwords ? 'Filtradas' : 'Completas'}</span>
+          </button>
+        </div>
+
+        {/* Botón único de ejecución */}
+        <div className="pills-nav-right">
+          <button
+            className="btn-pill-action btn-pill-action-verde"
+            onClick={handleEjecutarBucketSort}
+            disabled={cargando}
+          >
+            {cargando ? (
+              <>
+                <span className="spinner-pill"></span>
+                <span>Procesando con Bucket Sort…</span>
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span>Ejecutar Bucket Sort</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ─── TÍTULO PRINCIPAL MINIMALISTA ─── */}
+      <div className="dashboard-title-row">
+        <div className="dashboard-title-group">
+          <h1 className="dashboard-main-title">Análisis de Palabras</h1>
+          <span className="dashboard-badge-capsule dashboard-badge-capsule-verde">O(n + B)</span>
+        </div>
+        <p className="dashboard-subtitle">
+          Distribución cuantitativa y ordenamiento lineal por cubetas sobre el corpus documental AIEd.
         </p>
-      </header>
+      </div>
 
-      {/* Panel de Controles */}
-      <PanelControles
-        topK={topK}
-        setTopK={setTopK}
-        filtrarStopwords={filtrarStopwords}
-        setFiltrarStopwords={setFiltrarStopwords}
-        cargando={cargando}
-        onEjecutar={ejecutarBucketSort}
-        nombreAlgoritmo="Bucket Sort"
-      />
-
-      {/* Error si el backend no está disponible */}
+      {/* Error si el backend falla */}
       {error && <MensajeError mensaje={error} />}
 
-      {/* Resultados */}
+      {/* ─── ESTADO INICIAL (Aún no ejecutado) ─── */}
+      {!resultado && !cargando && !error && (
+        <div className="bienvenida-minimal-card">
+          <div className="bienvenida-min-body">
+            <h3>Listo para ejecutar Bucket Sort</h3>
+          </div>
+        </div>
+      )}
+
+      {/* ─── RESULTADOS (Solo tras presionar Ejecutar) ─── */}
       {resultado && (
-        <section className="seccion-resultados-morada">
-          {/* APARTADO REQUERIDO: Métricas y Parámetros */}
-          <TarjetasMetricas
+        <>
+          {/* APARTADO REQUERIDO: Métricas Minimalistas en Verde */}
+          <MetricasMinimal
             tiempoMs={resultado.tiempoMs || 0}
             totalElementos={resultado.totalElementos || 0}
             numeroCubetas={resultado.numeroCubetas || 0}
@@ -76,40 +143,21 @@ function BucketSortPage() {
             algoritmo="Bucket Sort"
           />
 
-          {/* Tabla de Ranking */}
-          <div className="ranking-header-row">
-            <div>
-              <h2>🏆 Ranking de Términos (Top {resultado.topK})</h2>
-              <span className="ranking-subtitulo">
-                Vocabulario {resultado.stopwordsFiltradas ? 'Temático (sin stopwords)' : 'Completo (con stopwords)'}
-              </span>
-            </div>
-            <div className="chip-resumen-algoritmo">
-              <span>Algoritmo:</span> <strong>{resultado.algoritmo}</strong>
-            </div>
-          </div>
+          {/* ÚNICA SECCIÓN DE RESULTADOS: Tabla de Resultados a Ancho Completo */}
+          <section className="dashboard-tabla-seccion-full">
+            <TablaResultadosMinimal
+              terminos={terminos}
+              numeroCubetas={resultado.numeroCubetas || 10}
+            />
+          </section>
 
-          <TablaResultados terminos={resultado.terminos} />
-
-          <div className="resultado-pie-info">
+          {/* Pie informativo sutil */}
+          <div className="dashboard-footer-info-verde">
             <span>
-              ℹ️ Los {resultado.totalElementos} términos fueron distribuidos en {resultado.numeroCubetas} cubetas
-              en {resultado.tiempoMs?.toFixed(4)} milisegundos mediante Bucket Sort.
+              ✓ Se ordenaron <strong>{resultado.totalElementos}</strong> términos únicos mediante <strong>{resultado.numeroCubetas} cubetas</strong> en <strong>{resultado.tiempoMs?.toFixed(4)} ms</strong>.
             </span>
           </div>
-        </section>
-      )}
-
-      {/* Mensaje de bienvenida si aún no se ha ejecutado */}
-      {!resultado && !cargando && !error && (
-        <div className="bienvenida-box">
-          <div className="bienvenida-icon">✨</div>
-          <h3>Listo para ejecutar el algoritmo</h3>
-          <p>
-            Configura el tamaño del ranking deseado y el filtro de stopwords, luego presiona
-            <strong> "Ejecutar Bucket Sort"</strong> para procesar el corpus y ver las métricas de cubetas y frecuencias.
-          </p>
-        </div>
+        </>
       )}
     </div>
   )
