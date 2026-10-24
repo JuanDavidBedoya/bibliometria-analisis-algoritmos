@@ -3,7 +3,8 @@
  *
  * Ventana: Ejecución interactiva del algoritmo Counting Sort.
  * Muestra el panel de configuración, las métricas del algoritmo requeridas
- * (n, k, fmin/fmax) y el ranking en tabla visual.
+ * (n, k, fmin/fmax), la tabla con las 5 ejecuciones y su promedio empírico,
+ * y el ranking visual en tabla.
  */
 
 import { useState } from 'react'
@@ -11,6 +12,7 @@ import { obtenerResultadoCountingSort } from '../api/countingSortApi'
 import PanelControles   from '../components/PanelControles'
 import MensajeError     from '../components/MensajeError'
 import TarjetasMetricas from '../components/TarjetasMetricas'
+import TablaEjecuciones from '../components/TablaEjecuciones'
 import TablaResultados  from '../components/TablaResultados'
 
 function CountingSortPage() {
@@ -67,7 +69,7 @@ function CountingSortPage() {
         <section className="seccion-resultados-morada">
           {/* Métricas y Parámetros */}
           <TarjetasMetricas
-            tiempoMs={resultado.tiempoMs || 0}
+            tiempoMs={resultado.tiempoPromedioMs || resultado.tiempoMs || 0}
             totalElementos={resultado.totalElementos || 0}
             rangoK={resultado.rangoK || resultado.numeroCubetas || 0}
             numeroCubetas={resultado.rangoK || resultado.numeroCubetas || 0}
@@ -76,6 +78,16 @@ function CountingSortPage() {
             totalArticulos={resultado.totalArticulos || 20}
             algoritmo="Counting Sort"
           />
+
+          {/* APARTADO REQUERIDO: TABLA DE LAS 5 EJECUCIONES Y PROMEDIO */}
+          {resultado.ejecucionesMs && resultado.ejecucionesMs.length > 0 && (
+            <TablaEjecuciones
+              ejecuciones={resultado.ejecucionesMs}
+              promedio={resultado.tiempoPromedioMs || resultado.tiempoMs || 0}
+              stopwordsFiltradas={resultado.stopwordsFiltradas}
+              totalElementos={resultado.totalElementos}
+            />
+          )}
 
           {/* Tabla de Ranking */}
           <div className="ranking-header-row">
@@ -94,7 +106,7 @@ function CountingSortPage() {
 
           <div className="resultado-pie-info">
             <span>
-              ℹ️ Los {resultado.totalElementos} términos fueron ordenados con un rango de frecuencias k = {resultado.rangoK || resultado.numeroCubetas} en {resultado.tiempoMs?.toFixed(4)} milisegundos mediante Counting Sort.
+              ℹ️ Los {resultado.totalElementos} términos fueron ordenados con un rango de frecuencias k = {resultado.rangoK || resultado.numeroCubetas}. Tiempo promedio de las 5 ejecuciones: {(resultado.tiempoPromedioMs || resultado.tiempoMs)?.toFixed(4)} ms.
             </span>
           </div>
         </section>
@@ -107,7 +119,8 @@ function CountingSortPage() {
           <h3>Listo para ejecutar Counting Sort</h3>
           <p>
             Configura el tamaño del ranking deseado y el filtro de stopwords, luego presiona
-            <strong> "Ejecutar Counting Sort"</strong> para procesar el corpus en tiempo lineal O(n + k) y ver los resultados.
+            <strong> "Ejecutar Counting Sort"</strong> para procesar el corpus en tiempo lineal O(n + k),
+            calcular las 5 ejecuciones empíricas y visualizar el ranking.
           </p>
         </div>
       )}

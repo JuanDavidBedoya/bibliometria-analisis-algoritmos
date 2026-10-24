@@ -2,6 +2,7 @@ package com.uniquindio.bibliometria.controller;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 import com.uniquindio.bibliometria.service.PreprocesamientoService;
 
 /**
- * Controlador REST que expone el algoritmo COUNTING SORT a través de HTTP.
+ * Controlador REST que expone el algoritmo COUNTING SORT a través de HTTP,
+ * incluyendo las 5 ejecuciones empíricas consecutivas y su promedio.
  *
  * Endpoint disponible:
  *   GET /api/counting-sort?topK=15&filtrarStopwords=true
@@ -39,12 +41,12 @@ public class CountingSortController {
     }
 
     /**
-     * Ejecuta el algoritmo Counting Sort sobre el corpus documental y devuelve el ranking
-     * de términos más frecuentes junto con los parámetros analíticos (n, k, min, max, tiempo).
+     * Ejecuta el algoritmo Counting Sort sobre el corpus documental (5 veces para medición empírica)
+     * y devuelve el ranking de términos junto con los tiempos de cada ejecución y el promedio.
      *
      * @param topK             Cantidad de términos a incluir en el ranking (por defecto 15).
      * @param filtrarStopwords Si es true, excluye palabras vacías funcionales (por defecto true).
-     * @return JSON con el resultado del ordenamiento y métricas empíricas.
+     * @return JSON con el resultado del ordenamiento, métricas y las 5 ejecuciones con promedio.
      */
     @GetMapping("/counting-sort")
     public ResponseEntity<RespuestaCountingSort> ejecutarCountingSort(
@@ -58,26 +60,38 @@ public class CountingSortController {
             // 2. Extraer las frecuencias globales de términos
             List<TerminoFrecuencia> frecuencias = preprocesamientoService.extraerFrecuenciasGlobales(corpus, filtrarStopwords);
 
-            // 3. Ejecutar Counting Sort (implementación explícita sin funciones de alto nivel)
-            ResultadoOrdenamiento resultado = CountingSort.ordenarDescendente(frecuencias);
+            // 3. Ejecutar Counting Sort 5 veces consecutivas para medición empírica real
+            List<Double> ejecucionesMs = new ArrayList<>(5);
+            double sumaTiempos = 0;
+            ResultadoOrdenamiento resultado = null;
+
+            for (int i = 0; i < 5; i++) {
+                resultado = CountingSort.ordenarDescendente(frecuencias);
+                double tMs = resultado.tiempoMilisegundos();
+                ejecucionesMs.add(tMs);
+                sumaTiempos += tMs;
+            }
+            double tiempoPromedioMs = sumaTiempos / 5.0;
 
             // 4. Mapear al Top K solicitado
             List<TerminoFrecuenciaDto> topTerminos = resultado.getTop(topK).stream()
                     .map(tf -> new TerminoFrecuenciaDto(tf.getTermino(), tf.getFrecuencia()))
                     .toList();
 
-            // 5. Construir y retornar el DTO de respuesta
+            // 5. Construir y retornar el DTO de respuesta con las 5 ejecuciones y promedio
             RespuestaCountingSort respuesta = new RespuestaCountingSort(
                     resultado.algoritmo(),
                     topTerminos,
                     resultado.tiempoMilisegundos(),
                     resultado.totalElementos(),
-                    resultado.numeroCubetas(), // Corresponde al rango k = max - min + 1
+                    resultado.numeroCubetas(), // Rango k = max - min + 1
                     resultado.frecuenciaMinima(),
                     resultado.frecuenciaMaxima(),
                     topK,
                     filtrarStopwords,
-                    corpus.size()
+                    corpus.size(),
+                    ejecucionesMs,
+                    tiempoPromedioMs
             );
 
             return ResponseEntity.ok(respuesta);
@@ -101,6 +115,8 @@ public class CountingSortController {
             int frecuenciaMaxima,
             int topK,
             boolean stopwordsFiltradas,
-            int totalArticulos
+            int totalArticulos,
+            List<Double> ejecucionesMs,
+            double tiempoPromedioMs
     ) {}
 }

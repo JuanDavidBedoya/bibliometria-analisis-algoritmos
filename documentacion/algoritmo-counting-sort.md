@@ -33,39 +33,65 @@ Dado que en un corpus textual la frecuencia máxima de una palabra es acotada ($
 
 ---
 
-## 2. Medición Empírica y Validación de Resultados
+## 2. Medición Empírica del Desempeño (5 Ejecuciones Consecutivas)
 
 Se ejecutó la implementación sobre el corpus completo de los 20 artículos científicos preprocesados (`datos/procesados/corpus_procesado.json`).
 
-### Tabla 1: Top 15 Términos Temáticos (Sin Stopwords)
+### Tabla 2.1: Detalle de las 5 Ejecuciones y Promedio - Vocabulario Temático (Sin Stopwords)
 
-* **Parámetros**: $n = 1012$ términos distintos, $f_{\text{min}} = 1$, $f_{\text{max}} = 77$, rango $k = 77$.
-* **Tiempo real de ejecución**: **0.3271 ms**
+* **Parámetros del experimento**:
+  * Términos distintos ($n$): **1012**
+  * Frecuencia mínima ($f_{\text{min}}$): **1**
+  * Frecuencia máxima ($f_{\text{max}}$): **77**
+  * Rango de frecuencias ($k$): **77**
 
-| Puesto | Término | Frecuencia |
-|:---:|:---|:---:|
-| #1 | ai | 77 |
-| #2 | education | 57 |
-| #3 | research | 46 |
-| #4 | learning | 40 |
-| #5 | aied | 36 |
-| #6 | review | 36 |
-| #7 | educational | 33 |
-| #8 | assessment | 32 |
-| #9 | intelligence | 22 |
-| #10 | studies | 21 |
-| #11 | higher | 16 |
-| #12 | artificial | 16 |
-| #13 | technologies | 15 |
-| #14 | literature | 15 |
-| #15 | systematic | 15 |
+| Muestra / Iteración | Términos ($n$) | Frec. Mín / Máx | Rango ($k$) | Tiempo Real de Ejecución |
+|:---|:---:|:---:|:---:|:---:|
+| **Ejecución 1 (En frío / JIT)** | 1012 | 1 / 77 | 77 | **0.3505 ms** |
+| **Ejecución 2** | 1012 | 1 / 77 | 77 | **0.2618 ms** |
+| **Ejecución 3** | 1012 | 1 / 77 | 77 | **0.2056 ms** |
+| **Ejecución 4** | 1012 | 1 / 77 | 77 | **0.2215 ms** |
+| **Ejecución 5** | 1012 | 1 / 77 | 77 | **0.2265 ms** |
+| **PROMEDIO (5 Ejecuciones)** | **1012** | **1 / 77** | **77** | **0.2532 ms** |
+
+> **Observación Técnica:** La Ejecución 1 refleja la sobrecarga en frío de carga de clases e inicialización del compilador JIT (0.3505 ms). A partir de la Ejecución 2, el tiempo se estabiliza entre 0.20 ms y 0.26 ms, confirmando el comportamiento estrictamente lineal $\mathcal{O}(n + k)$ con un tiempo promedio de **0.2532 ms**.
 
 ---
 
-### Tabla 2: Top 15 Vocabulario Completo (Con Stopwords)
+### Tabla 2.2: Comparativa de Escenarios
 
-* **Parámetros**: $n = 1140$ términos distintos, $f_{\text{min}} = 1$, $f_{\text{max}} = 221$, rango $k = 221$.
-* **Tiempo real de ejecución**: **0.2192 ms**
+| Escenario Bibliométrico | Términos ($n$) | Frec. Mín | Frec. Máx | Rango ($k$) | Tiempo Promedio (5 Ejecuciones) |
+|:---|:---:|:---:|:---:|:---:|:---:|
+| **Vocabulario Temático (Sin Stopwords)** | **1012** | **1** | **77** | **77** | **0.2532 ms** |
+| **Vocabulario Completo (Con Stopwords)** | **1140** | **1** | **221** | **221** | **0.2397 ms** |
+
+---
+
+## 3. Validación de Resultados: Rankings Top 15
+
+### Tabla 3.1: Top 15 Términos Temáticos (Sin Stopwords)
+
+| Puesto | Término | Frecuencia | Densidad en Top |
+|:---:|:---|:---:|:---:|
+| #1 | ai | 77 | 7.61% |
+| #2 | education | 57 | 5.63% |
+| #3 | research | 46 | 4.55% |
+| #4 | learning | 40 | 3.95% |
+| #5 | aied | 36 | 3.56% |
+| #6 | review | 36 | 3.56% |
+| #7 | educational | 33 | 3.26% |
+| #8 | assessment | 32 | 3.16% |
+| #9 | intelligence | 22 | 2.17% |
+| #10 | studies | 21 | 2.08% |
+| #11 | higher | 16 | 1.58% |
+| #12 | artificial | 16 | 1.58% |
+| #13 | technologies | 15 | 1.48% |
+| #14 | literature | 15 | 1.48% |
+| #15 | systematic | 15 | 1.48% |
+
+---
+
+### Tabla 3.2: Top 15 Vocabulario Completo (Con Stopwords)
 
 | Puesto | Término | Frecuencia |
 |:---:|:---|:---:|
@@ -87,7 +113,7 @@ Se ejecutó la implementación sobre el corpus completo de los 20 artículos cie
 
 ---
 
-## 3. Instrucciones de Ejecución
+## 4. Instrucciones de Ejecución
 
 ### Modo Consola Automático
 Muestra directamente las tablas del Top 15 y métricas empíricas:
@@ -95,32 +121,13 @@ Muestra directamente las tablas del Top 15 y métricas empíricas:
 java -cp target\classes com.uniquindio.bibliometria.EjecutorCountingSort --auto
 ```
 
-### Modo Consola Interactivo
-Permite seleccionar vocabulario con/sin stopwords y personalizar el tamaño del Top:
+### Medidor de las 5 Ejecuciones
+Ejecuta las 5 iteraciones consecutivas y calcula el promedio aritmético:
 ```powershell
-java -cp target\classes com.uniquindio.bibliometria.EjecutorCountingSort
+java -cp target\classes com.uniquindio.bibliometria.util.MedidorEjecuciones
 ```
 
 ### Endpoint REST (Spring Boot)
-Con la aplicación Spring Boot iniciada (`mvn spring-boot:run` o `BibliometriaApplication`):
 ```http
 GET http://localhost:8080/api/counting-sort?topK=15&filtrarStopwords=true
-```
-Respuesta JSON:
-```json
-{
-  "algoritmo": "Counting Sort",
-  "terminos": [
-    { "termino": "ai", "frecuencia": 77 },
-    { "termino": "education", "frecuencia": 57 }
-  ],
-  "tiempoMs": 0.3271,
-  "totalElementos": 1012,
-  "rangoK": 77,
-  "frecuenciaMinima": 1,
-  "frecuenciaMaxima": 77,
-  "topK": 15,
-  "stopwordsFiltradas": true,
-  "totalArticulos": 20
-}
 ```
