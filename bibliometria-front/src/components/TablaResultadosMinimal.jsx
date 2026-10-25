@@ -2,11 +2,11 @@
  * components/TablaResultadosMinimal.jsx
  *
  * Tabla de resultados minimalista en tonos verdes.
- * Muestra el ranking ordenado por Bucket Sort con columnas:
- *   # | TÉRMINO | FRECUENCIA | CUBETA | % DEL TOP
+ * Muestra el ranking ordenado con columnas:
+ *   # | TÉRMINO | FRECUENCIA | CUBETA / CLAVE | % DEL TOP
  */
 
-function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10 }) {
+function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10, esCounting = false }) {
   if (!terminos || terminos.length === 0) {
     return <p className="sin-datos-minimal">No hay términos disponibles en este ranking.</p>
   }
@@ -36,7 +36,7 @@ function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10 }) {
               <th className="th-min-num">#</th>
               <th className="th-min-termino">PALABRA / TÉRMINO</th>
               <th className="th-min-frec">FRECUENCIA</th>
-              <th className="th-min-cubeta">CUBETA</th>
+              <th className="th-min-cubeta">{esCounting ? 'CLAVE (f)' : 'CUBETA'}</th>
               <th className="th-min-barra">% DEL TOP</th>
             </tr>
           </thead>
@@ -71,7 +71,9 @@ function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10 }) {
                     <span className="frec-uds-sub">uds</span>
                   </td>
                   <td className="td-min-cubeta">
-                    <span className="cubeta-tag-verde">B_{cubetaAprox}</span>
+                    <span className="cubeta-tag-verde">
+                      {esCounting ? `f_${item.frecuencia}` : `B_${cubetaAprox}`}
+                    </span>
                   </td>
                   <td className="td-min-barra">
                     <div className="barra-min-flex">

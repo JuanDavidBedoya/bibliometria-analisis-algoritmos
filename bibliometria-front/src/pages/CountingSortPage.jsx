@@ -1,32 +1,34 @@
 /**
  * pages/CountingSortPage.jsx
  *
- * Ventana: Ejecución interactiva del algoritmo Counting Sort.
- * Muestra el panel de configuración, las métricas del algoritmo requeridas
- * (n, k, fmin/fmax), la tabla con las 5 ejecuciones y su promedio empírico,
- * y el ranking visual en tabla.
+ * Interfaz minimalista de Counting Sort en paleta de colores VERDE.
+ * Características:
+ *   - Solo muestra la tabla de resultados (se removió la tabla de 5 ejecuciones consecutivas).
+ *   - No se ejecuta automáticamente al entrar; solo al presionar "Ejecutar Counting Sort".
+ *   - Consulta exclusivamente al backend Spring Boot.
+ *   - Controles estilo pills (Top K, filtro stopwords, botón de ejecución).
+ *   - Métricas y parámetros del algoritmo (n, k, fmin/fmax, tiempo empírico O(n+k)).
+ *   - Tabla de resultados a ancho completo con ranking detallado.
  */
 
 import { useState } from 'react'
 import { obtenerResultadoCountingSort } from '../api/countingSortApi'
-import PanelControles   from '../components/PanelControles'
-import MensajeError     from '../components/MensajeError'
-import TarjetasMetricas from '../components/TarjetasMetricas'
-import TablaEjecuciones from '../components/TablaEjecuciones'
-import TablaResultados  from '../components/TablaResultados'
+import TablaResultadosMinimal from '../components/TablaResultadosMinimal'
+import MetricasMinimal from '../components/MetricasMinimal'
+import MensajeError from '../components/MensajeError'
 
 function CountingSortPage() {
-  const [topK, setTopK]                         = useState(15)
+  const [topK, setTopK] = useState(15)
   const [filtrarStopwords, setFiltrarStopwords] = useState(true)
-
   const [resultado, setResultado] = useState(null)
-  const [cargando, setCargando]   = useState(false)
-  const [error, setError]         = useState(null)
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState(null)
 
-  async function ejecutarCountingSort() {
+  const atajosTop = [10, 15, 20, 30, 50]
+
+  async function handleEjecutarCountingSort() {
     setCargando(true)
     setError(null)
-
     try {
       const datos = await obtenerResultadoCountingSort(topK, filtrarStopwords)
       setResultado(datos)
@@ -37,92 +39,126 @@ function CountingSortPage() {
     }
   }
 
+  const terminos = resultado?.terminos || []
+  const rangoK = resultado?.rangoK || (resultado?.frecuenciaMaxima - resultado?.frecuenciaMinima + 1) || 0
+
   return (
-    <div className="pagina-contenedor">
-      {/* Encabezado */}
-      <header className="pagina-header">
-        <div className="header-badge">ALGORITMOS DE ORDENAMIENTO · SEGUIMIENTO</div>
-        <h1>Algoritmo Counting Sort (Ordenamiento por Conteo)</h1>
-        <p className="pagina-descripcion">
-          Algoritmo de ordenamiento entero no comparativo con complejidad asintótica <strong>O(n + k)</strong>.
-          Calcula un histograma de frecuencias de los términos y genera sumas acumuladas (prefix sums)
-          para ubicar cada elemento de manera directa y determinista en tiempo estrictamente lineal.
+    <div className="dashboard-minimal-container dashboard-verde">
+      {/* ─── BARRA DE PESTAÑAS / PILLS EN VERDE ─── */}
+      <div className="pills-nav-bar">
+        <div className="pills-nav-left">
+          <div className="pill-item pill-active-verde">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+            <span>Análisis Counting Sort</span>
+          </div>
+
+          {/* Atajos de Top K estilo pill */}
+          <div className="pills-subgroup pills-subgroup-verde">
+            {atajosTop.map(k => (
+              <button
+                key={k}
+                className={`pill-item pill-choice ${topK === k ? 'pill-selected-verde' : ''}`}
+                onClick={() => setTopK(k)}
+                disabled={cargando}
+              >
+                Top {k}
+              </button>
+            ))}
+          </div>
+
+          {/* Filtro Stopwords en pastilla */}
+          <button
+            className={`pill-item pill-choice pill-toggle ${filtrarStopwords ? 'pill-on-verde' : ''}`}
+            onClick={() => setFiltrarStopwords(!filtrarStopwords)}
+            disabled={cargando}
+            title={filtrarStopwords ? 'Stopwords excluidas (vocabulario temático)' : 'Stopwords incluidas'}
+          >
+            <span className="pill-indicator-dot pill-indicator-dot-verde"></span>
+            <span>Stopwords: {filtrarStopwords ? 'Filtradas' : 'Completas'}</span>
+          </button>
+        </div>
+
+        {/* Botón único de ejecución */}
+        <div className="pills-nav-right">
+          <button
+            className="btn-pill-action btn-pill-action-verde"
+            onClick={handleEjecutarCountingSort}
+            disabled={cargando}
+          >
+            {cargando ? (
+              <>
+                <span className="spinner-pill"></span>
+                <span>Procesando con Counting Sort…</span>
+              </>
+            ) : (
+              <>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <span>Ejecutar Counting Sort</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ─── TÍTULO PRINCIPAL MINIMALISTA ─── */}
+      <div className="dashboard-title-row">
+        <div className="dashboard-title-group">
+          <h1 className="dashboard-main-title">Análisis de Palabras</h1>
+          <span className="dashboard-badge-capsule dashboard-badge-capsule-verde">O(n + k)</span>
+        </div>
+        <p className="dashboard-subtitle">
+          Ordenamiento no comparativo por histograma de frecuencias y sumas acumuladas sobre el corpus documental AIEd.
         </p>
-      </header>
+      </div>
 
-      {/* Panel de Controles */}
-      <PanelControles
-        topK={topK}
-        setTopK={setTopK}
-        filtrarStopwords={filtrarStopwords}
-        setFiltrarStopwords={setFiltrarStopwords}
-        cargando={cargando}
-        onEjecutar={ejecutarCountingSort}
-        nombreAlgoritmo="Counting Sort"
-      />
-
-      {/* Error si el backend no está disponible */}
+      {/* Error si el backend falla */}
       {error && <MensajeError mensaje={error} />}
 
-      {/* Resultados */}
+      {/* ─── ESTADO INICIAL (Aún no ejecutado) ─── */}
+      {!resultado && !cargando && !error && (
+        <div className="bienvenida-minimal-card">
+          <div className="bienvenida-min-body">
+            <h3>Listo para ejecutar Counting Sort</h3>
+          </div>
+        </div>
+      )}
+
+      {/* ─── RESULTADOS (Solo tras presionar Ejecutar) ─── */}
       {resultado && (
-        <section className="seccion-resultados-morada">
-          {/* Métricas y Parámetros */}
-          <TarjetasMetricas
-            tiempoMs={resultado.tiempoPromedioMs || resultado.tiempoMs || 0}
+        <>
+          {/* APARTADO REQUERIDO: Métricas Minimalistas en Verde */}
+          <MetricasMinimal
+            tiempoMs={resultado.tiempoMs || resultado.tiempoPromedioMs || 0}
             totalElementos={resultado.totalElementos || 0}
-            rangoK={resultado.rangoK || resultado.numeroCubetas || 0}
-            numeroCubetas={resultado.rangoK || resultado.numeroCubetas || 0}
+            rangoK={rangoK}
+            numeroCubetas={rangoK}
             frecuenciaMinima={resultado.frecuenciaMinima ?? 1}
             frecuenciaMaxima={resultado.frecuenciaMaxima ?? 1}
             totalArticulos={resultado.totalArticulos || 20}
             algoritmo="Counting Sort"
           />
 
-          {/* APARTADO REQUERIDO: TABLA DE LAS 5 EJECUCIONES Y PROMEDIO */}
-          {resultado.ejecucionesMs && resultado.ejecucionesMs.length > 0 && (
-            <TablaEjecuciones
-              ejecuciones={resultado.ejecucionesMs}
-              promedio={resultado.tiempoPromedioMs || resultado.tiempoMs || 0}
-              stopwordsFiltradas={resultado.stopwordsFiltradas}
-              totalElementos={resultado.totalElementos}
+          {/* ÚNICA SECCIÓN DE RESULTADOS: Tabla de Resultados a Ancho Completo */}
+          <section className="dashboard-tabla-seccion-full">
+            <TablaResultadosMinimal
+              terminos={terminos}
+              esCounting={true}
             />
-          )}
+          </section>
 
-          {/* Tabla de Ranking */}
-          <div className="ranking-header-row">
-            <div>
-              <h2>🏆 Ranking de Términos (Top {resultado.topK})</h2>
-              <span className="ranking-subtitulo">
-                Vocabulario {resultado.stopwordsFiltradas ? 'Temático (sin stopwords)' : 'Completo (con stopwords)'}
-              </span>
-            </div>
-            <div className="chip-resumen-algoritmo">
-              <span>Algoritmo:</span> <strong>Counting Sort</strong>
-            </div>
-          </div>
-
-          <TablaResultados terminos={resultado.terminos} />
-
-          <div className="resultado-pie-info">
+          {/* Pie informativo sutil */}
+          <div className="dashboard-footer-info-verde">
             <span>
-              ℹ️ Los {resultado.totalElementos} términos fueron ordenados con un rango de frecuencias k = {resultado.rangoK || resultado.numeroCubetas}. Tiempo promedio de las 5 ejecuciones: {(resultado.tiempoPromedioMs || resultado.tiempoMs)?.toFixed(4)} ms.
+              ✓ Se ordenaron <strong>{resultado.totalElementos}</strong> términos únicos mediante <strong>Counting Sort O(n + k)</strong> con rango k = <strong>{rangoK}</strong> en <strong>{(resultado.tiempoMs || resultado.tiempoPromedioMs)?.toFixed(4)} ms</strong>.
             </span>
           </div>
-        </section>
-      )}
-
-      {/* Mensaje de bienvenida si aún no se ha ejecutado */}
-      {!resultado && !cargando && !error && (
-        <div className="bienvenida-box">
-          <div className="bienvenida-icon">📊</div>
-          <h3>Listo para ejecutar Counting Sort</h3>
-          <p>
-            Configura el tamaño del ranking deseado y el filtro de stopwords, luego presiona
-            <strong> "Ejecutar Counting Sort"</strong> para procesar el corpus en tiempo lineal O(n + k),
-            calcular las 5 ejecuciones empíricas y visualizar el ranking.
-          </p>
-        </div>
+        </>
       )}
     </div>
   )

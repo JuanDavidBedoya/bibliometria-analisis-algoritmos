@@ -1650,3 +1650,95 @@ body {
   border-radius: var(--radio-sm);
   border-left: 3px solid var(--morado-500);
 }
+
+
+/* ==========================================================================
+   TABLA DE 5 EJECUCIONES Y MEDICIÓN EMPÍRICA (VERDE CLARO)
+   ========================================================================== */
+.pill-promedio-verde {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: var(--verde-50);
+  border: 1px solid var(--border-verde);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: var(--verde-900);
+}
+
+.pill-promedio-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--verde-600);
+  box-shadow: 0 0 6px var(--verde-400);
+}
+
+.tag-frio-verde {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #b45309;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.punto-frio-verde {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+.tag-caliente-verde {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--verde-800);
+  background: var(--verde-50);
+  border: 1px solid var(--border-verde);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+
+.punto-caliente-verde {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--verde-600);
+}
+
+.tag-promedio-verde {
+  font-size: 0.75rem;
+  color: var(--verde-800);
+  font-style: italic;
+}
+
+.fila-promedio-verde {
+  background: var(--verde-50) !important;
+  border-top: 1.5px solid var(--border-verde);
+  border-bottom: 1.5px solid var(--border-verde);
+}
+
+.fila-promedio-verde td {
+  background: var(--verde-50) !important;
+  border-bottom: none !important;
+}
+
+.ejecuciones-nota-pie-verde {
+  margin-top: 1rem;
+  padding: 0.65rem 0.95rem;
+  background: #f8fafc;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
