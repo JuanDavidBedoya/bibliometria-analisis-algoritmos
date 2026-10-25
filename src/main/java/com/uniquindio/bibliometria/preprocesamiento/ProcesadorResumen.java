@@ -1,7 +1,6 @@
 package com.uniquindio.bibliometria.preprocesamiento;
 
 import com.uniquindio.bibliometria.ingesta.ArticuloExtraido;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -21,11 +20,11 @@ public final class ProcesadorResumen {
         String texto = opciones.reconstruirEspacios()
                 ? combinarEspacios(articulo.resumenOriginal(), articulo.resumenConEspacios())
                 : articulo.resumenOriginal();
-        if (opciones.normalizarUnicode()) texto = Normalizer.normalize(texto, Normalizer.Form.NFKC);
         // Une palabras partidas antes de normalizar los saltos de linea.
         if (opciones.unirGuiones()) {
             texto = texto.replaceAll("(?<=[\\p{L}\\p{M}])[-\\u00ad\\u2010][\\t\\p{Zs}]*\\R[\\t\\p{Zs}]*(?=\\p{Ll})", "");
         }
+        if (opciones.normalizarUnicode()) texto = NormalizadorTexto.caracteres(texto);
         if (opciones.normalizarEspacios()) {
             // Los saltos normales se convierten en un espacio.
             // Esto se aplica despues de unir las palabras cortadas por guion.

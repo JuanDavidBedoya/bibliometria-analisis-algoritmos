@@ -171,7 +171,9 @@ public final class ConsolaPdf {
             salida.println("Cantidad de palabras: " + procesado.palabras().size());
             salida.println("Palabras: " + mostrarPalabras(procesado.palabras()));
         } else salida.println("No se puede procesar el resumen: faltan campos.");
-        salida.println("Observaciones: " + articulo.observaciones());
+        if (!articulo.observaciones().isEmpty()) {
+            salida.println("Observaciones: " + articulo.observaciones());
+        }
     }
 
     static String mostrarPalabras(List<String> palabras) {

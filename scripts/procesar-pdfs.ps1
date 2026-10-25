@@ -1,7 +1,7 @@
 param(
-    [ValidateSet('Pruebas', 'Inspeccionar', 'Exportar')][string]$Modo = 'Pruebas',
+    [ValidateSet('Inspeccionar', 'Exportar')][string]$Modo = 'Inspeccionar',
     [string]$Origen = (Join-Path (Split-Path -Parent $PSScriptRoot) 'datos/pdfs_originales'),
-    [string]$Salida = (Join-Path (Split-Path -Parent $PSScriptRoot) 'datos/procesados/articulos.json'),
+    [string]$Salida = (Join-Path (Split-Path -Parent $PSScriptRoot) 'datos/procesados/corpus_procesado.json'),
     [int]$Articulo = 0,
     [switch]$ConservarTexto,
     [switch]$NormalizarEspacios,
@@ -27,7 +27,7 @@ try {
             throw "Falta una herramienta en PATH: $herramienta"
         }
     }
-    if ($Modo -ne 'Pruebas' -and -not $Origen) { throw 'Indique -Origen con un ZIP o una carpeta de PDF' }
+    if (-not $Origen) { throw 'Indique -Origen con un ZIP o una carpeta de PDF' }
     New-Item -ItemType Directory -Path $carpetaTemporal | Out-Null
     if ($OcultarAvisosFuentes) {
         # Oculta solo los avisos de fuentes sin correspondencia Unicode.
@@ -50,7 +50,6 @@ java.util.logging.ConsoleHandler.filter=com.uniquindio.bibliometria.ingesta.Filt
   <dependencies>
     <dependency><groupId>org.apache.pdfbox</groupId><artifactId>pdfbox</artifactId><version>3.0.4</version></dependency>
     <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>3.1.5</version></dependency>
-    <dependency><groupId>org.junit.platform</groupId><artifactId>junit-platform-console-standalone</artifactId><version>1.11.4</version></dependency>
   </dependencies>
 </project>
 '@
@@ -68,32 +67,21 @@ java.util.logging.ConsoleHandler.filter=com.uniquindio.bibliometria.ingesta.Filt
     & javac -encoding UTF-8 -cp "$carpetaTemporal\lib\*" -d $carpetaClases @archivosCodigo
     if ($LASTEXITCODE -ne 0) { throw 'Fallo la compilacion' }
     $rutaClases = "$carpetaClases;$carpetaTemporal\lib\*"
-    if ($Modo -eq 'Pruebas') {
-        $raizPruebas = Join-Path $raizProyecto 'src/test/java/com/uniquindio/bibliometria'
-        $pruebas = @(@('ingesta', 'preprocesamiento') | ForEach-Object {
-            Get-ChildItem -LiteralPath (Join-Path $raizPruebas $_) -Filter *Test.java | ForEach-Object FullName
-        })
-        & javac -encoding UTF-8 -cp $rutaClases -d $carpetaClases @pruebas
-        if ($LASTEXITCODE -ne 0) { throw 'Fallo la compilacion de pruebas' }
-        if ($Origen) { $opcionesJava += "-Dbibliometria.corpus=$Origen" }
-        & java @opcionesJava -cp $rutaClases org.junit.platform.console.ConsoleLauncher execute --scan-classpath --disable-banner --details=summary
-    } else {
-        $argumentos = @($Modo.ToLowerInvariant(), $Origen)
-        if ($Modo -eq 'Exportar') {
-            if ($Articulo -gt 0) { throw 'La exportacion guarda todos los articulos; no use -Articulo' }
-            $argumentos += $Salida
-        }
-        if ($Modo -eq 'Inspeccionar' -and $Articulo -gt 0) { $argumentos += "$Articulo" }
-        if ($Modo -eq 'Exportar' -or ($Modo -eq 'Inspeccionar' -and $Articulo -gt 0)) {
-            if ($ConservarTexto) { $argumentos += '--conservar-texto' }
-            if ($NormalizarEspacios) { $argumentos += '--espacios' }
-            if ($Minusculas) { $argumentos += '--minusculas' }
-            if ($NormalizarUnicode) { $argumentos += '--unicode' }
-            if ($UnirGuiones) { $argumentos += '--unir-guiones' }
-            if ($ReconstruirEspacios) { $argumentos += '--reconstruir-espacios' }
-        }
-        & java @opcionesJava -cp $rutaClases com.uniquindio.bibliometria.ingesta.ConsolaPdf @argumentos
+    $argumentos = @($Modo.ToLowerInvariant(), $Origen)
+    if ($Modo -eq 'Exportar') {
+        if ($Articulo -gt 0) { throw 'La exportacion guarda todos los articulos; no use -Articulo' }
+        $argumentos += $Salida
     }
+    if ($Modo -eq 'Inspeccionar' -and $Articulo -gt 0) { $argumentos += "$Articulo" }
+    if ($Modo -eq 'Exportar' -or ($Modo -eq 'Inspeccionar' -and $Articulo -gt 0)) {
+        if ($ConservarTexto) { $argumentos += '--conservar-texto' }
+        if ($NormalizarEspacios) { $argumentos += '--espacios' }
+        if ($Minusculas) { $argumentos += '--minusculas' }
+        if ($NormalizarUnicode) { $argumentos += '--unicode' }
+        if ($UnirGuiones) { $argumentos += '--unir-guiones' }
+        if ($ReconstruirEspacios) { $argumentos += '--reconstruir-espacios' }
+    }
+    & java @opcionesJava -cp $rutaClases com.uniquindio.bibliometria.ingesta.ConsolaPdf @argumentos
     if ($LASTEXITCODE -ne 0) { throw 'Fallo la ejecucion' }
 } finally {
     [Console]::OutputEncoding = $codificacionConsolaAnterior

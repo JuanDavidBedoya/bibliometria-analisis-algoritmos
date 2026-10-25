@@ -11,7 +11,7 @@ public record OpcionesPreprocesamiento(boolean normalizarEspacios, boolean minus
     }
 
     public static OpcionesPreprocesamiento limpiezaMinima() {
-        return new OpcionesPreprocesamiento(true, true, false, true, true);
+        return new OpcionesPreprocesamiento(true, true, true, true, true);
     }
 
     public static OpcionesPreprocesamiento conservarTexto() {

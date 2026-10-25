@@ -32,11 +32,9 @@ public final class ArchivoArticulosJson {
                         + ". Revise el PDF antes de exportar.");
             }
             var procesado = procesador.procesar(articulo, opciones);
-            String nombre = articulo.archivo().replace('\\', '/');
-            nombre = nombre.substring(nombre.lastIndexOf('/') + 1);
-            datos.add(new ArticuloJson(nombre, articulo.titulo(), articulo.autores(),
+            datos.add(new ArticuloJson(articulo.titulo(), articulo.autores(),
                     articulo.resumenOriginal(), procesado.resumenProcesado(),
-                    procesado.palabras(), articulo.observaciones()));
+                    procesado.palabras()));
         }
         String contenido = convertidor.writerWithDefaultPrettyPrinter().writeValueAsString(datos);
         Path ruta = destino.toAbsolutePath().normalize();

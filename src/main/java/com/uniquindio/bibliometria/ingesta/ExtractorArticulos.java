@@ -1,5 +1,6 @@
 package com.uniquindio.bibliometria.ingesta;
 
+import com.uniquindio.bibliometria.preprocesamiento.NormalizadorTexto;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,7 +19,6 @@ public final class ExtractorArticulos {
 
     public ArticuloExtraido extraer(DocumentoPdf documento) {
         List<String> notas = new ArrayList<>();
-        notas.add("Los campos extraidos requieren revision manual.");
         if (documento.paginas().isEmpty()) return camposAusentes(documento.archivo(), notas);
         PaginaPdf pagina = documento.paginas().get(0);
         List<PaginaPdf.Linea> lineas = pagina.lineas();
@@ -29,7 +29,7 @@ public final class ExtractorArticulos {
         }
         float posicionResumen = encabezado == null ? pagina.alto() : encabezado.y();
         List<PaginaPdf.Linea> lineasTitulo = lineasTitulo(documento.tituloMetadatos(), lineas, posicionResumen);
-        String titulo = unirLineas(lineasTitulo, " ");
+        String titulo = NormalizadorTexto.unaLinea(unirLineas(lineasTitulo, " "));
         if (titulo.isBlank()) notas.add("No se identifico el titulo.");
         if (!documento.tituloMetadatos().isBlank() && !clave(titulo).equals(clave(documento.tituloMetadatos()))) {
             notas.add("El titulo visible difiere de los metadatos; revise el titulo visible.");
@@ -93,7 +93,7 @@ public final class ExtractorArticulos {
             if (linea.y() >= primero.y() - 2 && linea.y() <= primero.y() + 22
                     && Math.abs(linea.tamanoFuente() - primero.tamanoFuente()) < .8f) bloque.add(linea);
         }
-        String texto = unirLineas(bloque, " ").replaceAll("[\\d*]+", "")
+        String texto = NormalizadorTexto.unaLinea(unirLineas(bloque, " ")).replaceAll("[\\d*]+", "")
                 .replaceAll("(?<=\\s)[a-f](?=\\s*[,;]|$)", "")
                 .replaceAll("[\\s\\p{Z}]+", " ");
         List<String> resultado = new ArrayList<>();
