@@ -56,6 +56,8 @@ public record ResultadoOrdenamiento(
         System.out.printf("  Frecuencia mínima / máxima:       %d / %d%n", frecuenciaMinima, frecuenciaMaxima);
         if ("Counting Sort".equalsIgnoreCase(algoritmo)) {
             System.out.printf("  Rango de claves k (max-min+1):    %d%n", numeroCubetas);
+        } else if ("Radix Sort".equalsIgnoreCase(algoritmo)) {
+            System.out.printf("  Número de dígitos d:              %d%n", numeroCubetas);
         } else {
             System.out.printf("  Número de cubetas utilizado (B):  %d%n", numeroCubetas);
         }

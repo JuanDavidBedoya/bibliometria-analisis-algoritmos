@@ -6,7 +6,7 @@
  *   # | TÉRMINO | FRECUENCIA | CUBETA / CLAVE | % DEL TOP
  */
 
-function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10, esCounting = false }) {
+function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10, esCounting = false, esRadix = false }) {
   if (!terminos || terminos.length === 0) {
     return <p className="sin-datos-minimal">No hay términos disponibles en este ranking.</p>
   }
@@ -36,7 +36,7 @@ function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10, esCounting 
               <th className="th-min-num">#</th>
               <th className="th-min-termino">PALABRA / TÉRMINO</th>
               <th className="th-min-frec">FRECUENCIA</th>
-              <th className="th-min-cubeta">{esCounting ? 'CLAVE (f)' : 'CUBETA'}</th>
+              <th className="th-min-cubeta">{esCounting ? 'CLAVE (f)' : esRadix ? 'DÍGITOS (d)' : 'CUBETA'}</th>
               <th className="th-min-barra">% DEL TOP</th>
             </tr>
           </thead>
@@ -72,7 +72,7 @@ function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10, esCounting 
                   </td>
                   <td className="td-min-cubeta">
                     <span className="cubeta-tag-verde">
-                      {esCounting ? `f_${item.frecuencia}` : `B_${cubetaAprox}`}
+                      {esCounting ? `f_${item.frecuencia}` : esRadix ? `d_${String(item.frecuencia).length}` : `B_${cubetaAprox}`}
                     </span>
                   </td>
                   <td className="td-min-barra">

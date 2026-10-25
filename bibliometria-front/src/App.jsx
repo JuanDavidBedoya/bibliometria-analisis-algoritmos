@@ -6,6 +6,7 @@ import Sidebar          from './components/Sidebar'
 import InformacionPage  from './pages/InformacionPage'
 import CountingSortPage from './pages/CountingSortPage'
 import BucketSortPage   from './pages/BucketSortPage'
+import RadixSortPage    from './pages/RadixSortPage'
 import './App.css'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           {ventanaActiva === 'informacion'  && <InformacionPage />}
           {ventanaActiva === 'countingsort' && <CountingSortPage />}
           {ventanaActiva === 'bucketsort'   && <BucketSortPage />}
+          {ventanaActiva === 'radixsort'    && <RadixSortPage />}
         </main>
       </div>
     </div>

@@ -47,6 +47,20 @@ function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20, isOpen,
         </svg>
       ),
       badge: 'O(n+k)'
+    },
+    {
+      id: 'radixsort',
+      titulo: 'Radix Sort',
+      subtitulo: 'Por dígitos O(d·(n+b))',
+      icono: (
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      ),
+      badge: 'O(d·(n+b))'
     }
   ]
 
