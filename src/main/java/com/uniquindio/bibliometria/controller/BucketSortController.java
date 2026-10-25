@@ -19,11 +19,10 @@ import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 import com.uniquindio.bibliometria.service.PreprocesamientoService;
 
 /**
- * Controlador REST que expone los datos del corpus y el algoritmo Bucket Sort a través de HTTP.
+ * Controlador REST que expone el algoritmo Bucket Sort a través de HTTP.
  *
  * Endpoints disponibles:
  *   GET /api/bucket-sort?topK=15&filtrarStopwords=true
- *   GET /api/articulos
  */
 @RestController
 @RequestMapping("/api")
@@ -56,32 +55,6 @@ public class BucketSortController {
         Path p2 = Path.of("..", "datos", "pdfs_originales");
         if (Files.exists(p2)) return p2;
         return p1;
-    }
-
-    /**
-     * Retorna la lista de todos los artículos científicos utilizados en el estudio.
-     */
-    @GetMapping("/articulos")
-    public ResponseEntity<List<ArticuloResumenDto>> obtenerArticulos() {
-        try {
-            Path rutaPdfs = resolverRutaPdfs();
-            Path rutaJson = resolverRutaJson();
-
-            List<ArticuloDocumental> corpus = preprocesamientoService.obtenerCorpus(rutaPdfs, rutaJson);
-            List<ArticuloResumenDto> dtos = corpus.stream()
-                    .map(a -> new ArticuloResumenDto(
-                            a.id(),
-                            a.archivo(),
-                            a.titulo(),
-                            a.autores(),
-                            a.abstractOriginal(),
-                            a.totalTokens()
-                    ))
-                    .toList();
-            return ResponseEntity.ok(dtos);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        }
     }
 
     /**
@@ -138,15 +111,6 @@ public class BucketSortController {
     // ─── DTOs (Data Transfer Objects) ───────────────────────────────────────────
 
     public record TerminoFrecuenciaDto(String termino, int frecuencia) {}
-
-    public record ArticuloResumenDto(
-            int id,
-            String archivo,
-            String titulo,
-            List<String> autores,
-            String resumenOriginal,
-            int totalPalabras
-    ) {}
 
     public record RespuestaBucketSort(
             String algoritmo,

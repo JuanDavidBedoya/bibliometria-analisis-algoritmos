@@ -1,9 +1,9 @@
 package com.uniquindio.bibliometria.algoritmos.ordenamiento;
 
-import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
-
 import java.util.List;
 import java.util.Objects;
+
+import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 
 /**
  * Encapsula el resultado de la ejecución de un algoritmo de ordenamiento,
