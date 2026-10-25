@@ -61,6 +61,16 @@ function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20, isOpen,
         </svg>
       ),
       badge: 'O(d·(n+b))'
+    },
+    {
+      id: 'comparacion',
+      titulo: 'Comparación',
+      subtitulo: 'Resultados y tiempos',
+      icono: (
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 20h16M7 16V9M12 16V4M17 16v-5" />
+        </svg>
+      )
     }
   ]
 
