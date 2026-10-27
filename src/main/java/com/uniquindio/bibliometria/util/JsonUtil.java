@@ -11,11 +11,6 @@ import java.util.Map;
 
 import com.uniquindio.bibliometria.modelo.ArticuloDocumental;
 
-/**
- * Utilidad ligera para serializar y deserializar el corpus de artículos a formato JSON.
- * Implementada en Java puro sin requerir librerías externas para máxima portabilidad,
- * simplicidad y transparencia educativa.
- */
 public final class JsonUtil {
 
     private JsonUtil() {

@@ -8,21 +8,6 @@ import java.util.List;
 import com.uniquindio.bibliometria.modelo.ArticuloDocumental;
 import com.uniquindio.bibliometria.service.PreprocesamientoService;
 
-/**
- * Módulo independiente de PREPROCESAMIENTO del corpus documental.
- *
- * PROPÓSITO:
- * Se ejecuta UNA SOLA VEZ para:
- * 1. Leer los 20 artículos científicos en PDF desde el directorio 'datos/pdfs_originales'.
- * 2. Extraer metadatos esenciales (título del proyecto, autores, abstract original,
- *    abstract procesado y lista de tokens).
- * 3. Almacenar toda la información estructurada en el archivo centralizado
- *    'datos/procesados/corpus_procesado.json'.
- *
- * Una vez generado el archivo JSON, los algoritmos de análisis (Bucket Sort, Similitud Clásica,
- * Similitud con IA, Agrupamiento Jerárquico) pueden ejecutarse indefinidamente accediendo
- * directamente a la información en memoria sin volver a procesar los documentos PDF.
- */
 public class EjecutorPreprocesamiento {
 
     public static void main(String[] args) {

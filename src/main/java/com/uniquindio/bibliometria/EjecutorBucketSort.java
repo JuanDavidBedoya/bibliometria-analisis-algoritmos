@@ -13,17 +13,6 @@ import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 import com.uniquindio.bibliometria.service.PreprocesamientoService;
 import com.uniquindio.bibliometria.util.JsonUtil;
 
-/**
- * Módulo independiente de ejecución del algoritmo BUCKET SORT.
- *
- * CARACTERÍSTICAS PRINCIPALES:
- * 1. Acceso instantáneo: Lee los datos directamente desde 'datos/procesados/corpus_procesado.json'
- *    sin volver a procesar los documentos PDF.
- * 2. Ejecución repetitiva: El usuario puede ejecutar el algoritmo tantas veces como lo desee,
- *    probando diferentes configuraciones (filtrado de stopwords, número de cubetas, tamaño de Top).
- * 3. Medición empírica precisa: En cada ejecución se mide el tiempo real en milisegundos.
- * 4. Modo interactivo o automático: Soporta menú en consola o ejecución directa.
- */
 public class EjecutorBucketSort {
 
     public static void main(String[] args) {

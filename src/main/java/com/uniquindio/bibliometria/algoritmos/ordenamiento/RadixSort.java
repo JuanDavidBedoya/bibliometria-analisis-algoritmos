@@ -5,55 +5,6 @@ import java.util.List;
 
 import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 
-/**
- * Implementación explícita, simple y paso a paso del algoritmo RADIX SORT (Ordenamiento por Dígitos).
- *
- * =========================================================================================
- * FUNDAMENTACIÓN TEÓRICA Y COMPLEJIDAD ASINTÓTICA:
- * =========================================================================================
- * A diferencia de los algoritmos de ordenamiento basados en comparaciones entre pares de claves
- * (como QuickSort o MergeSort, cuya cota inferior teórica demostrada por el árbol de decisión
- * es Ω(n log n)), Radix Sort es un algoritmo de ordenamiento que no utiliza comparaciones directas.
- *
- * Radix Sort ordena los elementos procesando sus dígitos uno por uno, desde el dígito menos
- * significativo (LSD - Least Significant Digit) hasta el dígito más significativo (MSD).
- * Cada pasada utiliza un algoritmo de ordenamiento ESTABLE (Counting Sort) como subrutina
- * para ordenar los elementos según un solo dígito a la vez.
- *
- * Sea n el número total de términos a ordenar, d el número de dígitos del valor máximo
- * de frecuencia, y b la base numérica utilizada (en esta implementación, b = 10):
- *
- * El algoritmo opera en las siguientes fases:
- *   1. Determinar el valor máximo de frecuencia [O(n)]:
- *      Se recorre la lista una vez para encontrar la frecuencia máxima. El número de dígitos
- *      d = ⌊log₁₀(max)⌋ + 1 determina cuántas pasadas de Counting Sort se necesitan.
- *
- *   2. Para cada posición de dígito (unidades, decenas, centenas, ...) se ejecuta
- *      un Counting Sort estable [O(n + b)] por pasada:
- *      a) Se extrae el dígito en la posición actual de cada elemento.
- *      b) Se construye un arreglo de conteo de tamaño b = 10 (dígitos del 0 al 9).
- *      c) Se calculan las sumas acumuladas (prefix sums).
- *      d) Se ubican los elementos en su posición final recorriendo de derecha a izquierda
- *         para garantizar ESTABILIDAD.
- *
- *   3. Al finalizar las d pasadas, la lista queda completamente ordenada de menor a mayor.
- *      Para obtener orden DESCENDENTE (ranking bibliométrico), se invierte el resultado.
- *
- * COMPLEJIDAD ASINTÓTICA TOTAL:
- *   - Se realizan d pasadas, cada una con costo O(n + b).
- *   - Complejidad Temporal: O(d * (n + b)).
- *     En el contexto bibliométrico, las frecuencias son enteros positivos relativamente pequeños.
- *     Como b = 10 (constante) y d = ⌊log₁₀(maxFrecuencia)⌋ + 1 (usualmente d ≤ 3 o 4),
- *     la complejidad efectiva es O(n), es decir, LINEAL.
- *   - Complejidad Espacial Auxiliar: O(n + b), correspondiente al arreglo de salida de tamaño n
- *     y al arreglo de conteo de tamaño b = 10.
- *
- * REGLA DE TRANSPARENCIA:
- * Esta clase no utiliza funciones de alto nivel (como Collections.sort() ni Arrays.sort()).
- * Todo el ordenamiento se implementa con arreglos nativos y ciclos elementales.
- *
- * @author John
- */
 public final class RadixSort {
 
     // Base numérica decimal: los dígitos van de 0 a 9

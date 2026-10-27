@@ -13,17 +13,6 @@ import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 import com.uniquindio.bibliometria.service.PreprocesamientoService;
 import com.uniquindio.bibliometria.util.JsonUtil;
 
-/**
- * Módulo independiente de ejecución del algoritmo COUNTING SORT.
- *
- * CARACTERÍSTICAS PRINCIPALES:
- * 1. Acceso instantáneo: Lee los datos directamente desde 'datos/procesados/corpus_procesado.json'
- *    sin necesidad de reprocesar los archivos PDF.
- * 2. Ejecución repetitiva: Permite ejecutar el algoritmo múltiples veces probando
- *    distintos escenarios (con o sin filtrado de stopwords, variando el Top K).
- * 3. Medición empírica precisa: Registra los tiempos reales de ejecución en milisegundos.
- * 4. Modo interactivo o automático: Soporta ejecución por consola mediante menú o vía argumento '--auto'.
- */
 public class EjecutorCountingSort {
 
     public static void main(String[] args) {

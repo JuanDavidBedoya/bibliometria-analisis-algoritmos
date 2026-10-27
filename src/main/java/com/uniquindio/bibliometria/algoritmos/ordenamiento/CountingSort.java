@@ -5,56 +5,6 @@ import java.util.List;
 
 import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 
-/**
- * Implementación explícita, simple y paso a paso del algoritmo COUNTING SORT (Ordenamiento por Conteo).
- *
- * =========================================================================================
- * FUNDAMENTACIÓN TEÓRICA Y COMPLEJIDAD ASINTÓTICA:
- * =========================================================================================
- * A diferencia de los algoritmos de ordenamiento basados en comparaciones entre pares de claves
- * (como QuickSort o MergeSort, cuya cota inferior teórica demostrada por el árbol de decisión
- * es Ω(n log n)), Counting Sort es un algoritmo de ordenamiento que no utiliza comparaciones directas.
- *
- * Aprovecha que las claves a ordenar son números enteros positivos que representan la frecuencia
- * de aparición de cada término dentro del corpus documental bibliométrico.
- *
- * Sea n el número total de términos a ordenar y k el rango de valores posibles de las frecuencias
- * (k = maxFrecuencia - minFrecuencia + 1):
- *
- * El algoritmo opera en 4 fases lineales bien definidas:
- *   1. Análisis de Rango [O(n)]:
- *      Se recorre la lista una vez para determinar la frecuencia mínima (min) y máxima (max).
- *      El rango de dispersión es k = max - min + 1.
- *
- *   2. Conteo de Frecuencias [O(n)]:
- *      Se crea un arreglo auxiliar de enteros de tamaño k, inicializado en ceros.
- *      Por cada elemento de la lista de entrada con frecuencia f, se incrementa la posición
- *      (f - min), calculando el histograma exacto de repetición de cada frecuencia.
- *
- *   3. Sumas Acumuladas o Frecuencias Acumuladas (Prefix Sums) [O(k)]:
- *      Se transforma el arreglo de conteo sumando los valores acumulados. Para el caso de
- *      ordenamiento DESCENDENTE (ranking bibliométrico de mayor a menor frecuencia), la acumulación
- *      se realiza de derecha a izquierda (desde la frecuencia máxima hacia la mínima).
- *      Esto determina de forma directa y determinista el índice final que ocupará cada elemento
- *      en el arreglo ordenado de salida.
- *
- *   4. Ubicación en el Arreglo de Salida y Estabilidad [O(n)]:
- *      Se itera la lista de entrada de atrás hacia adelante (desde n-1 hasta 0), colocando cada
- *      término en su posición final calculada y decrementando el conteo acumulado correspondiente.
- *      El recorrido en reversa garantiza que el algoritmo sea ESTABLE (los términos con igual
- *      frecuencia conservan el orden relativo original).
- *
- * COMPLEJIDAD ASINTÓTICA TOTAL:
- *   - Complejidad Temporal: O(n + k) en el mejor, peor y caso promedio.
- *     En el contexto bibliométrico, donde k representa la frecuencia máxima de una palabra
- *     (k << n o k ≈ O(n)), el tiempo de ejecución es estrictamente LINEAL: O(n).
- *   - Complejidad Espacial Auxiliar: O(n + k), correspondiente al arreglo de conteo de tamaño k
- *     y al arreglo de salida de tamaño n.
- *
- * REGLA DE TRANSPARENCIA:
- * Esta clase no utiliza funciones de alto nivel (como Collections.sort() ni Arrays.sort()).
- * Todo el ordenamiento se implementa con arreglos nativos y ciclos elementales.
- */
 public final class CountingSort {
 
     private CountingSort() {

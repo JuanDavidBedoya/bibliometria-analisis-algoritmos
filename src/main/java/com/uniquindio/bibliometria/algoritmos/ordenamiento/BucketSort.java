@@ -5,37 +5,6 @@ import java.util.List;
 
 import com.uniquindio.bibliometria.modelo.TerminoFrecuencia;
 
-/**
- * Implementación explícita y paso a paso del algoritmo de ordenamiento BUCKET SORT (Ordenamiento por Cubetas).
- *
- * =========================================================================================
- * FUNDAMENTACIÓN TEÓRICA Y COMPLEJIDAD ASINTÓTICA:
- * =========================================================================================
- * A diferencia de los algoritmos de ordenamiento basados en comparaciones directas (como QuickSort
- * o MergeSort cuya cota inferior matemática es Ω(n log n)), Bucket Sort es un algoritmo de distribución
- * que aprovecha la naturaleza cuantitativa de las claves (en este caso, enteros positivos que representan
- * la frecuencia de aparición de términos en el corpus bibliométrico).
- *
- * El algoritmo opera en 4 fases fundamentales:
- *   1. Análisis de Rango: Encuentra los valores mínimo (min) y máximo (max) de frecuencia en O(n).
- *   2. Dispersión (Scatter): Distribuye los n elementos en B cubetas mediante una función matemática
- *      de mapeo lineal: indice = ⌊(frecuencia - min) * (B - 1) / (max - min)⌋ en O(n).
- *   3. Ordenamiento Interno: Ordena cada cubeta individualmente mediante Insertion Sort explícito.
- *      Si la distribución es uniforme, cada cubeta contendrá en promedio n/B elementos. El costo
- *      esperado por cubeta es O((n/B)²), y sumado sobre las B cubetas da O(B * (n/B)²) = O(n²/B).
- *      Al elegir B ≈ n, el tiempo esperado de esta fase es O(n).
- *   4. Recolección (Gather): Concatena los elementos de todas las cubetas en O(n + B).
- *
- * COMPLEJIDAD TOTAL:
- *   - Caso Promedio: O(n + B). Cuando B = O(n), la complejidad asintótica resultante es estrictamente LINEAL: O(n).
- *   - Mejor Caso: O(n + B), cuando los elementos se distribuyen de manera perfectamente equitativa.
- *   - Peor Caso: O(n²), si todos los elementos caen en una única cubeta y se degenera en Insertion Sort.
- *   - Espacio Auxiliar: O(n + B), para almacenar los punteros y estructuras de las cubetas.
- *
- * REGLA DE TRANSPARENCIA:
- * Esta clase no utiliza funciones de alto nivel (como Collections.sort() o Arrays.sort()).
- * Todo el ordenamiento interno se realiza de manera explícita con estructuras elementales.
- */
 public final class BucketSort {
 
     private BucketSort() {
