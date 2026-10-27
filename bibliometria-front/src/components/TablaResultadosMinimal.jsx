@@ -1,11 +1,3 @@
-/**
- * components/TablaResultadosMinimal.jsx
- *
- * Tabla de resultados minimalista en tonos verdes.
- * Muestra el ranking ordenado con columnas:
- *   # | TÉRMINO | FRECUENCIA | CUBETA / CLAVE | % DEL TOP
- */
-
 function TablaResultadosMinimal({ terminos = [], numeroCubetas = 10, esCounting = false, esRadix = false }) {
   if (!terminos || terminos.length === 0) {
     return <p className="sin-datos-minimal">No hay términos disponibles en este ranking.</p>

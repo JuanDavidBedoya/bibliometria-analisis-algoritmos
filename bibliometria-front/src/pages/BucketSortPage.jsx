@@ -1,16 +1,3 @@
-/**
- * pages/BucketSortPage.jsx
- *
- * Interfaz minimalista de Bucket Sort en paleta de colores VERDE.
- * Características:
- *   - Solo muestra la tabla de resultados (se removió el gráfico de barras).
- *   - No se ejecuta automáticamente al entrar; solo al presionar "Ejecutar Bucket Sort".
- *   - Consulta exclusivamente al backend Spring Boot.
- *   - Controles estilo pills (Top K, filtro stopwords, botón de ejecución).
- *   - Métricas y parámetros del algoritmo (n, B, fmin/fmax, tiempo).
- *   - Tabla de resultados a ancho completo con ranking detallado.
- */
-
 import { useState } from 'react'
 import { obtenerResultadoBucketSort } from '../api/bucketSortApi'
 import TablaResultadosMinimal from '../components/TablaResultadosMinimal'

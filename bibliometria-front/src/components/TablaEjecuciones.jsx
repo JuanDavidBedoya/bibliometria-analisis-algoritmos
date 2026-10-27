@@ -1,11 +1,3 @@
-/**
- * components/TablaEjecuciones.jsx
- *
- * Muestra la tabla de las 5 ejecuciones consecutivas del algoritmo
- * y el cálculo exacto del tiempo promedio en milisegundos con
- * diseño minimalista en tonos verde claro.
- */
-
 function TablaEjecuciones({
   ejecuciones = [],
   promedio = 0,

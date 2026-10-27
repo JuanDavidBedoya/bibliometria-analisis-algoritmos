@@ -1,16 +1,3 @@
-/**
- * pages/CountingSortPage.jsx
- *
- * Interfaz minimalista de Counting Sort en paleta de colores VERDE.
- * Características:
- *   - Solo muestra la tabla de resultados (se removió la tabla de 5 ejecuciones consecutivas).
- *   - No se ejecuta automáticamente al entrar; solo al presionar "Ejecutar Counting Sort".
- *   - Consulta exclusivamente al backend Spring Boot.
- *   - Controles estilo pills (Top K, filtro stopwords, botón de ejecución).
- *   - Métricas y parámetros del algoritmo (n, k, fmin/fmax, tiempo empírico O(n+k)).
- *   - Tabla de resultados a ancho completo con ranking detallado.
- */
-
 import { useState } from 'react'
 import { obtenerResultadoCountingSort } from '../api/countingSortApi'
 import TablaResultadosMinimal from '../components/TablaResultadosMinimal'

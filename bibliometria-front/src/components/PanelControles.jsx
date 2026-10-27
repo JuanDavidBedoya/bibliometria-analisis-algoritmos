@@ -1,10 +1,3 @@
-/**
- * components/PanelControles.jsx
- *
- * Panel con los parámetros configurables del algoritmo (Top K y filtro de stopwords)
- * y el botón con efecto púrpura para disparar la ejecución del algoritmo seleccionado.
- */
-
 function PanelControles({
   topK,
   setTopK,

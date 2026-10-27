@@ -1,13 +1,3 @@
-/**
- * components/MetricasMinimal.jsx
- *
- * Tarjetas de métricas y parámetros con estilo minimalista en tonos verdes.
- *   - Número de términos distintos (n)
- *   - Frecuencia mínima / máxima (fmin / fmax)
- *   - Rango de claves (k) o Número de cubetas utilizado (B)
- *   - Tiempo empírico de ejecución (ms)
- */
-
 function MetricasMinimal({
   tiempoMs = 0,
   totalElementos = 0,

@@ -1,9 +1,3 @@
-/**
- * pages/InformacionPage.jsx
- *
- * Ventana 1: Información y corpus de artículos científicos.
- * Los datos se consultan exclusivamente desde el backend Spring Boot (/api/articulos).
- */
 import { useState, useEffect } from 'react'
 import { obtenerArticulos } from '../api/bucketSortApi'
 import MensajeError from '../components/MensajeError'
@@ -57,7 +51,7 @@ function InformacionPage() {
       <section className="hero-section">
         <div className="hero-izquierda">
           <h1 className="hero-titulo">
-            Proyecto Final<br />
+            Seguimiento<br />
             <span className="hero-titulo-acento">Análisis de Algoritmos</span>
           </h1>
 

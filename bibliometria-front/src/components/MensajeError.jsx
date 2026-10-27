@@ -1,9 +1,3 @@
-/**
- * components/MensajeError.jsx
- *
- * Muestra un bloque amigable cuando el backend no responde o devuelve un error.
- */
-
 function MensajeError({ mensaje }) {
   return (
     <section className="error-card-morada">

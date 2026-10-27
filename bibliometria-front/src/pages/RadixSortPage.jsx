@@ -1,18 +1,3 @@
-/**
- * pages/RadixSortPage.jsx
- *
- * Interfaz minimalista de Radix Sort en paleta de colores VERDE.
- * Características:
- *   - Solo muestra la tabla de resultados.
- *   - No se ejecuta automáticamente al entrar; solo al presionar "Ejecutar Radix Sort".
- *   - Consulta exclusivamente al backend Spring Boot.
- *   - Controles estilo pills (Top K, filtro stopwords, botón de ejecución).
- *   - Métricas y parámetros del algoritmo (n, d, fmin/fmax, tiempo empírico O(d·(n+b))).
- *   - Tabla de resultados a ancho completo con ranking detallado.
- *
- * @author John
- */
-
 import { useState } from 'react'
 import { obtenerResultadoRadixSort } from '../api/radixSortApi'
 import TablaResultadosMinimal from '../components/TablaResultadosMinimal'

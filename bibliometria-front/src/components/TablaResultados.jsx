@@ -1,10 +1,3 @@
-/**
- * components/TablaResultados.jsx
- *
- * Tabla estilizada con la paleta de morados para mostrar el ranking
- * de términos más frecuentes tras el Bucket Sort.
- */
-
 function TablaResultados({ terminos = [] }) {
   if (terminos.length === 0) {
     return <p className="sin-datos">No hay términos para mostrar.</p>

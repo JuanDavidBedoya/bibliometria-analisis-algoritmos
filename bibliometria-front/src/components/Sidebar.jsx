@@ -1,9 +1,3 @@
-/**
- * components/Sidebar.jsx
- *
- * Barra lateral con diseño minimalista en paleta de colores VERDE.
- * Tipografía Poppins, estados limpios y colapsado discreto.
- */
 import { useEffect } from 'react'
 
 function Sidebar({ ventanaActiva, setVentanaActiva, totalArticulos = 20, isOpen, setIsOpen }) {

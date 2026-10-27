@@ -1,13 +1,3 @@
-/**
- * components/TarjetasMetricas.jsx
- *
- * Muestra el apartado con los parámetros y métricas del algoritmo ejecutado:
- *   - Número de términos distintos (n)
- *   - Frecuencia mínima / máxima (fmin / fmax)
- *   - Número de cubetas (B) en Bucket Sort o Rango de claves (k) en Counting Sort
- *   - Tiempo real de ejecución (ms)
- */
-
 function TarjetasMetricas({
   tiempoMs = 0,
   totalElementos = 0,
