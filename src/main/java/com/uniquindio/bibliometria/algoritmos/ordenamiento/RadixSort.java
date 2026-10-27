@@ -51,9 +51,7 @@ public final class RadixSort {
             return new ResultadoOrdenamiento("Radix Sort", new ArrayList<>(lista), duracionMs, 1, 1, f, f);
         }
 
-        // -------------------------------------------------------------------------
         // PASO 1: Encontrar la frecuencia máxima para saber cuántos dígitos tiene [O(n)]
-        // -------------------------------------------------------------------------
         int maxFrecuencia = lista.get(0).getFrecuencia();
         int minFrecuencia = lista.get(0).getFrecuencia();
 
@@ -74,18 +72,14 @@ public final class RadixSort {
             return new ResultadoOrdenamiento("Radix Sort", new ArrayList<>(lista), duracionMs, n, 0, minFrecuencia, maxFrecuencia);
         }
 
-        // -------------------------------------------------------------------------
         // PASO 2: Copiar la lista a un arreglo de trabajo para manipularlo
-        // -------------------------------------------------------------------------
         TerminoFrecuencia[] arreglo = new TerminoFrecuencia[n];
         for (int i = 0; i < n; i++) {
             arreglo[i] = lista.get(i);
         }
 
-        // -------------------------------------------------------------------------
         // PASO 3: Ejecutar Counting Sort por cada posición de dígito (LSD → MSD)
         // El divisor (1, 10, 100, 1000, ...) indica qué dígito se está procesando
-        // -------------------------------------------------------------------------
         int totalDigitos = 0; // Contador de pasadas (dígitos procesados)
 
         // Recorremos cada posición de dígito mientras el divisor sea menor o igual al máximo
@@ -95,10 +89,8 @@ public final class RadixSort {
             totalDigitos++;
         }
 
-        // -------------------------------------------------------------------------
         // PASO 4: Construir la lista resultado
         // Radix Sort ordena de menor a mayor. Si se pide descendente, invertimos.
-        // -------------------------------------------------------------------------
         List<TerminoFrecuencia> resultado = new ArrayList<>(n);
 
         if (descendente) {

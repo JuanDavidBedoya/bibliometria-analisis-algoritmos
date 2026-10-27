@@ -47,9 +47,7 @@ public final class CountingSort {
             return new ResultadoOrdenamiento("Counting Sort", new ArrayList<>(lista), duracionMs, 1, 1, f, f);
         }
 
-        // -------------------------------------------------------------------------
         // PASO 1: Encontrar los valores mínimo y máximo de frecuencia en O(n)
-        // -------------------------------------------------------------------------
         int minFrecuencia = lista.get(0).getFrecuencia();
         int maxFrecuencia = lista.get(0).getFrecuencia();
 
@@ -73,21 +71,17 @@ public final class CountingSort {
         // Rango de frecuencias k: define el tamaño del arreglo de conteo
         int k = maxFrecuencia - minFrecuencia + 1;
 
-        // -------------------------------------------------------------------------
         // PASO 2: Construir el arreglo de conteo (Histograma de frecuencias) en O(n)
         // Cada índice (frecuencia - minFrecuencia) almacena cuántas veces aparece dicha frecuencia
-        // -------------------------------------------------------------------------
         int[] conteo = new int[k];
         for (int i = 0; i < n; i++) {
             int frecuencia = lista.get(i).getFrecuencia();
             conteo[frecuencia - minFrecuencia]++;
         }
 
-        // -------------------------------------------------------------------------
         // PASO 3: Calcular las sumas acumuladas (Prefix Sums) en O(k)
         // Transforma el arreglo de conteo para que conteo[i] indique la última posición
         // que ocupará un elemento con dicha clave en el arreglo de salida.
-        // -------------------------------------------------------------------------
         if (descendente) {
             // Para orden descendente (mayor a menor frecuencia), acumulamos desde
             // la frecuencia más alta (k - 1) hacia la más baja (0)
@@ -101,10 +95,8 @@ public final class CountingSort {
             }
         }
 
-        // -------------------------------------------------------------------------
         // PASO 4: Construir el arreglo de salida en O(n) garantizando ESTABILIDAD
         // Recorremos la lista original de derecha a izquierda (desde n - 1 hasta 0).
-        // -------------------------------------------------------------------------
         TerminoFrecuencia[] salida = new TerminoFrecuencia[n];
 
         for (int i = n - 1; i >= 0; i--) {

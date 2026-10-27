@@ -56,9 +56,7 @@ public final class BucketSort {
             return new ResultadoOrdenamiento("Bucket Sort", new ArrayList<>(lista), duracionMs, n, numCubetas, f, f);
         }
 
-        // -------------------------------------------------------------------------
         // PASO 1: Encontrar los valores mínimo y máximo de frecuencia en O(n)
-        // -------------------------------------------------------------------------
         int minFrecuencia = lista.get(0).getFrecuencia();
         int maxFrecuencia = lista.get(0).getFrecuencia();
 
@@ -85,37 +83,29 @@ public final class BucketSort {
             numCubetas = rango;
         }
 
-        // -------------------------------------------------------------------------
         // PASO 2: Inicializar el arreglo de cubetas
-        // -------------------------------------------------------------------------
         List<TerminoFrecuencia>[] cubetas = new List[numCubetas];
         for (int i = 0; i < numCubetas; i++) {
             cubetas[i] = new ArrayList<>();
         }
 
-        // -------------------------------------------------------------------------
         // PASO 3: FASE DE DISPERSIÓN (SCATTER) en O(n)
         // Mapeo lineal de cada frecuencia f al índice de cubeta correspondiente
-        // -------------------------------------------------------------------------
         for (int i = 0; i < n; i++) {
             TerminoFrecuencia elem = lista.get(i);
             int indiceCubeta = calcularIndiceCubeta(elem.getFrecuencia(), minFrecuencia, maxFrecuencia, numCubetas);
             cubetas[indiceCubeta].add(elem);
         }
 
-        // -------------------------------------------------------------------------
         // PASO 4: FASE DE ORDENAMIENTO INTERNO POR CUBETA
         // Implementación explícita de Insertion Sort (sin librerías externas)
-        // -------------------------------------------------------------------------
         for (int i = 0; i < numCubetas; i++) {
             if (cubetas[i].size() > 1) {
                 ordenarPorInsercion(cubetas[i], descendente);
             }
         }
 
-        // -------------------------------------------------------------------------
         // PASO 5: FASE DE RECOLECCIÓN (GATHER) en O(n + B)
-        // -------------------------------------------------------------------------
         List<TerminoFrecuencia> resultado = new ArrayList<>(n);
 
         if (descendente) {
