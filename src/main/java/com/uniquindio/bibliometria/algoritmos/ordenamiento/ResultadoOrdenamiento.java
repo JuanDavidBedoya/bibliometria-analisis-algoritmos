@@ -48,27 +48,6 @@ public record ResultadoOrdenamiento(
      * y los parámetros requeridos del algoritmo.
      */
     public void imprimirTop(int k) {
-        List<TerminoFrecuencia> top = getTop(k);
-        System.out.println("=========================================================================");
-        System.out.printf("  RANKING TOP %d - ALGORITMO: %s%n", top.size(), algoritmo.toUpperCase());
-        System.out.println("=========================================================================");
-        System.out.printf("  Número de términos distintos (n): %d%n", totalElementos);
-        System.out.printf("  Frecuencia mínima / máxima:       %d / %d%n", frecuenciaMinima, frecuenciaMaxima);
-        if ("Counting Sort".equalsIgnoreCase(algoritmo)) {
-            System.out.printf("  Rango de claves k (max-min+1):    %d%n", numeroCubetas);
-        } else if ("Radix Sort".equalsIgnoreCase(algoritmo)) {
-            System.out.printf("  Número de dígitos d:              %d%n", numeroCubetas);
-        } else {
-            System.out.printf("  Número de cubetas utilizado (B):  %d%n", numeroCubetas);
-        }
-        System.out.printf("  Tiempo real de ejecución:         %.4f ms%n", tiempoMilisegundos);
-        System.out.println("-------------------------------------------------------------------------");
-        System.out.printf("  %-6s | %-30s | %-12s%n", "PUESTO", "TÉRMINO", "FRECUENCIA");
-        System.out.println("-------------------------------------------------------------------------");
-        for (int i = 0; i < top.size(); i++) {
-            TerminoFrecuencia tf = top.get(i);
-            System.out.printf("  #%-5d | %-30s | %-12d%n", i + 1, tf.getTermino(), tf.getFrecuencia());
-        }
-        System.out.println("=========================================================================");
+        // Método vaciado para no imprimir por terminal
     }
 }

@@ -17,7 +17,6 @@ public class MedidorEjecuciones {
         PreprocesamientoService servicio = new PreprocesamientoService();
         List<TerminoFrecuencia> tematicos = servicio.extraerFrecuenciasGlobales(arts, true);
 
-        System.out.println("TOTAL TERMINOS TEMATICOS (SIN STOPWORDS): " + tematicos.size());
         double sumaTiempos = 0;
         double[] tiempos = new double[5];
 
@@ -25,9 +24,11 @@ public class MedidorEjecuciones {
             ResultadoOrdenamiento res = CountingSort.ordenarDescendente(tematicos);
             tiempos[i] = res.tiempoMilisegundos();
             sumaTiempos += tiempos[i];
-            System.out.printf("EJECUCION_%d=%.4f%n", (i + 1), tiempos[i]);
         }
+
+        // promedio disponible en: sumaTiempos / 5.0
         double promedio = sumaTiempos / 5.0;
-        System.out.printf("PROMEDIO=%.4f%n", promedio);
+        // suprimir advertencia de variable no usada
+        assert promedio >= 0;
     }
 }
